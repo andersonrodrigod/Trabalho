@@ -221,6 +221,9 @@ def automar_fuction(df):
     #print("Salvamento final concluído.")
 
 
+
+
+
 dados = "total_agosto_adicionar.xlsx"
 
 automar_fuction(dados)
