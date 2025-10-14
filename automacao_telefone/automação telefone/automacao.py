@@ -17,13 +17,31 @@ def automacao_codigo_inicio(codigo):
     py.press("f8")
     time.sleep(0.5)
 
+    verificar_cor_vermelho_puro(121, 159)
+
     copy_vazio()
 
     py.press("enter")
     py.press("enter")
     py.press("enter")
+    time.sleep(0.5)
     py.press("enter")
     time.sleep(0.5)
+
+
+def verificar_cor_vermelho_puro(x, y):
+    time.sleep(0.5)
+
+    for x_atual in range(x, x + 61):
+        r, g, b = py.pixel(x_atual, y)
+        print(f"Pixel em ({x_atual},{y}): RGB = ({r}, {g}, {b})")
+
+        if (r, g, b) == (255, 0, 0):
+            print("Cor vermelha pura detectada.")
+            py.press("esc")
+            return  # Interrompe a função após detectar vermelho
+
+    print("Nenhuma cor vermelha pura encontrada.")
 
 
 def automacao_codigo_next():
@@ -104,4 +122,7 @@ def verificar_cor_pixel(x, y):
 
     print("Nenhuma cor válida encontrada.")
     return False
+
+import pyautogui as py
+import time
 
