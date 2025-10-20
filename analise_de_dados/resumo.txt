@@ -1,0 +1,55 @@
+1️⃣ Resumo por estado
+
+Número de respondentes: Quantas pessoas responderam por estado.
+
+Distribuição de idade: Percentual ou gráfico de faixa etária (até 30, 31–39, 40–49 etc.).
+
+Sexo: Quantos homens, quantas mulheres.
+
+Situação conjugal: Quantos com companheiro, sem companheiro etc.
+
+Cor ou raça: Distribuição por estado.
+
+💡 Esses dados podem aparecer em cartões (cards) ou gráficos de barra/pizza para cada estado.
+
+2️⃣ Dados de trabalho
+
+Área de atuação: Quantos respondentes por área (Enfermagem, Gerência etc.).
+
+Turno de trabalho: Quantos de manhã, tarde, noite.
+
+Cargo de gestão: Quantos exercem gestão.
+
+Carga horária semanal: Média ou distribuição por estado.
+
+Isso dá uma ideia rápida de como o pessoal está distribuído no trabalho.
+
+3️⃣ Empoderamento e satisfação
+
+Você tem várias métricas de múltipla escolha sobre empoderamento, oportunidades e satisfação. Algumas ideias:
+
+Média das respostas por estado (ex.: “trabalho desafiador”, “flexibilidade no trabalho”).
+
+Pode criar gráficos de barra ou coluna mostrando a média ou percentual de concordância.
+
+💡 Use cores diferentes para cada faixa de resposta (ex.: “Muita”, “Alguma”, “Pouca”) para facilitar a leitura.
+
+4️⃣ Interatividade
+
+Use slicers (filtros) de estado para atualizar todos os gráficos da página.
+
+Assim, o usuário clica em SC, CE, MG e todos os dados mudam automaticamente para aquele estado.
+
+5️⃣ Visual final sugerido
+
+Topo: Cards com número de respondentes e principais indicadores por estado.
+
+Meio: Gráficos de barras/pizza para idade, sexo, cor, situação conjugal.
+
+Fundo: Gráficos de empoderamento, oportunidades e métricas de satisfação.
+
+Isso garante que a página tenha scroll, mas continue limpa e organizada.
+
+Se você quiser, posso montar um esboço visual de layout da primeira página, mostrando onde cada gráfico/tabela ficaria e quais dados usar. Isso vai facilitar muito na hora de montar no Power BI.
+
+Quer que eu faça isso?

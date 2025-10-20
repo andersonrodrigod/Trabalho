@@ -1,0 +1,107 @@
+📄 Layout sugerido da página – Resumo por Estado
+Topo da página: Título + Filtro
+
+Título: Resumo por Estado – Pesquisa de Empoderamento da Enfermagem
+
+Slicer (filtro): Estado (SC, CE, MG, SP, etc.)
+
+Ao selecionar um estado, todos os gráficos da página atualizam automaticamente.
+
+Pode colocar também um filtro de cidade, caso queira detalhar depois.
+
+Seção 1: Cards com indicadores principais
+
+Um conjunto de 4–5 cartões logo abaixo do título.
+
+Sugestão de métricas:
+
+Número de respondentes → card mostrando total.
+
+Sexo → card mostrando % homens / % mulheres.
+
+Situação conjugal → % com companheiro(a), % sem.
+
+Faixa etária mais comum → pode ser um card com faixa principal ou média de idade.
+
+(Opcional) Cor ou raça predominante.
+
+💡 Cards devem ser coloridos e chamativos, fáceis de ler de relance.
+
+Seção 2: Gráficos principais
+
+Gráfico de barras ou colunas: Distribuição por faixa etária (ex.: até 30, 31–39, 40–49, etc.)
+
+Gráfico de pizza ou donut: Sexo
+
+Gráfico de barras ou colunas: Situação conjugal
+
+Gráfico de barras ou colunas: Cor ou raça
+
+Dica: você pode organizar 2 gráficos por linha, assim a página não fica poluída e ainda permite scroll vertical.
+
+Seção 3: Observações ou detalhes
+
+Um pequeno tabela resumida (opcional) com número de respondentes por cidade dentro do estado selecionado.
+
+Pode usar tooltips nos gráficos para mostrar detalhes adicionais ao passar o mouse.
+
+Exemplo visual aproximado (em texto)
+[ Título da Página ]          [ Slicer: Estado ]
+
+[ Card: Nº Respondentes ]  [ Card: Sexo ]  [ Card: Situação Conjugal ] [ Card: Faixa Etária ] [ Card: Cor/Raça ]
+
+[ Gráfico de Faixa Etária ]   [ Gráfico de Sexo ]
+[ Gráfico de Situação Conjugal ]   [ Gráfico de Cor/Raça ]
+
+[ Tabela resumida: Respondentes por cidade ] (opcional)
+
+
+Se você quiser, posso desenhar um esboço gráfico dessa página, tipo um mockup, mostrando onde cada card e gráfico ficaria. Isso ajuda a visualizar melhor antes de começar a montar no Power BI.
+
+
+
+
+
+1️⃣ Seletor de Estado
+
+Visual: Segmentação de dados (Slicer)
+
+Função: Permite escolher o estado (“SC” no exemplo) para filtrar todos os demais gráficos.
+
+2️⃣ Número de respondentes
+
+Visual: Cartão (Card)
+
+Função: Exibe um número único (150) de forma destacada.
+
+3️⃣ Sexo
+
+Visual: Gráfico de pizza (Pie chart)
+
+Função: Mostra a proporção de homens e mulheres (Mumens e Mulhers).
+
+4️⃣ Situação conjugal
+
+Visual: Gráfico de barras horizontais (Bar chart, horizontal)
+
+Função: Comparar “Com companheiro” e “Sem companheiro”.
+
+5️⃣ Faixa etária
+
+Visual: Gráfico de barras horizontais (Bar chart, horizontal)
+
+Função: Mostrar distribuição por faixa etária (até 30, 31–39, etc.)
+
+6️⃣ Distribuição por faixa etária
+
+Visual: Gráfico de barras horizontais (Bar chart, horizontal)
+
+Função: Outra forma de mostrar faixa etária detalhando números.
+
+7️⃣ Cor ou raça
+
+Visual: Tabela (Table)
+
+Função: Mostrar categorias com seus percentuais.
+
+Quer que eu faça esse mockup?
