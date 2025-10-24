@@ -1,0 +1,67 @@
+1️⃣ Comece pelo arquivo principal: main.py
+
+Ele é o ponto de entrada da aplicação.
+
+Aqui vamos criar a janela principal CTkinter e um frame base vazio que depois receberá os frames das aplicações.
+
+Objetivo inicial:
+
+Abrir a janela
+
+Testar que a janela aparece
+
+Colocar algum frame de teste dentro para visualização
+
+Primeiro teste que você fará:
+
+Ao rodar main.py, a janela CTkinter abre sem erros.
+
+Um frame de teste aparece com um label ou botão dentro, só para validar visualmente.
+
+Isso te dá feedback visual imediato e já garante que a arquitetura básica está funcionando.
+
+2️⃣ Próximo passo: criar o frame base
+
+Crie um arquivo em views/ chamado base_frame.py (ou app_frame.py).
+
+Nesse arquivo você define uma classe que herda de CTkFrame, que será a base de todos os frames futuros.
+
+Inicialmente, apenas exibe algo simples como “Frame carregado!” para testar.
+
+Teste do frame base:
+
+Adicione esse frame à janela no main.py.
+
+Rodando o código, você vê o label ou botão dentro do frame.
+
+3️⃣ Depois: criar o layout do frame de uma aplicação específica
+
+Como você quer começar pelo “Retirar/Substituir dados”:
+
+Crie um arquivo edit_data_frame.py em views/.
+
+Inicialmente, só crie o frame com:
+
+Label “Retirar/Substituir dados”
+
+Botão “Selecionar arquivo” que abre file dialog
+
+Teste inicial do frame de aplicação:
+
+Ao clicar no botão, aparece a caixa de seleção de arquivo.
+
+Nada mais acontece ainda; apenas validar que o botão funciona e o caminho do arquivo pode ser armazenado em uma variável do frame.
+
+4️⃣ Observações importantes
+
+Não precisamos ainda conectar com o model.
+
+O foco é visual e interativo primeiro, depois adicionamos a lógica (manipulação Excel, pandas, etc.)
+
+A cada etapa, você consegue testar rapidamente:
+
+Janela abre? ✅
+
+Frame aparece? ✅
+
+Botão funciona? ✅
