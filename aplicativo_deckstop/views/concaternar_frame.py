@@ -8,7 +8,7 @@ class Concatenar(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        master.geometry("500x600+100+50")
+        master.geometry("500x600")
         
         self.controller = ConcatenarController()
         self.arquivos_selecionados = []

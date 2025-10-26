@@ -2,7 +2,11 @@ import customtkinter as ctk
 from views.menu_frame import MenuFrame
 from views.detalhamento_frame import Detalhamento
 from views.concaternar_frame import Concatenar
-from views.excluir_linhas import ExcluirLinhas
+from views.excluir_linhas_frame import ExcluirLinhas
+from views.substituir_valores_frame import SubstituirValores
+from views.merge_planilhas_frame import MergePlanilhas
+from views.renomear_abas_frame import RenomearAbas
+from views.renomear_colunas_frame import RenomearColunas
 
 
 ctk.set_appearance_mode("dark") 
@@ -13,14 +17,13 @@ class App(ctk.CTk):
         super().__init__()
 
         self.title("Meu APP")
-        self.geometry("750x600+0+0")
 
         #self.geometry("900x800")
 
         self.current_frame = None
         self.menu_frame = MenuFrame
 
-        self.show_frame(ExcluirLinhas)
+        self.show_frame(RenomearColunas)
     
     def show_frame(self, frame_class):
         if self.current_frame is not None:

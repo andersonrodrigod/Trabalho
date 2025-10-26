@@ -8,7 +8,7 @@ class Detalhamento(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        master.geometry("700x570+100+50")
+        master.geometry("700x570")
 
         self.controller = DetalhamentoController()
         
@@ -249,13 +249,14 @@ class Detalhamento(ctk.CTkFrame):
             self.progress_bar.set(0.3)
             self.update()
             for arquivo in self.file_eletivo:
-                dfs_ajustados =self.controller.ajustar_abas(arquivo, tipo="eletivo")
-
+                dfs_ajustados = self.controller.ajustar_abas(arquivo, tipo="eletivo")
+                lista_dfs.append(dfs_ajustados)
+                
             # 3️⃣ Processa arquivos de Internação
             self.progress_bar.set(0.6)
             for arquivo in self.file_internacao:
-                dfs = self.controller.ajustar_abas(arquivo, tipo="internacao")
-                lista_dfs.append(dfs)
+                dfs_ajustados = self.controller.ajustar_abas(arquivo, tipo="internacao")
+                lista_dfs.append(dfs_ajustados)
 
             # 4️⃣ Junta todas as abas iguais usando a função do Controller
             self.progress_bar.set(0.8)
