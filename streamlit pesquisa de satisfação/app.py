@@ -13,12 +13,17 @@ def main():
     st.sidebar.header("Painel de Filtros")
     st.set_page_config(page_title="Dashboard", layout="wide")
 
-    # Layout Principal da páginas
-    layout_geral_status()
+    pagina = st.sidebar.selectbox("Escolha o Tipo de Análise de Dados", [
+        "Tabela Global"
+    ])
 
-    layout_geral_status_resposta()
+    if pagina == "Tabela Global":
+        st.title("Tabelas Pesquisa de Satisfação")
+        layout_geral_status()   
+        layout_geral_status_resposta()
+        layout_geral_elogio()
+   
 
-    layout_geral_elogio()
 
 
 
