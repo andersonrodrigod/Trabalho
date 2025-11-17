@@ -1,10 +1,10 @@
 import pandas as pd
 
 # --- Caminho do arquivo ---
-arquivo = "novo.xlsx"  # substitua pelo seu arquivo
+arquivo = "base para automação escuta ativa 1411.xlsx"  # substitua pelo seu arquivo
 
 # --- Ler a planilha ---
-df = pd.read_excel(arquivo)
+df = pd.read_excel(arquivo, sheet_name="pos")
 
 # --- Palavras a ignorar ---
 ignorar = {"de", "da", "do", "dos"}

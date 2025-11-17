@@ -1,8 +1,8 @@
 import pandas as pd
 
 # Caminho do arquivo original
-arquivo_entrada = "status e detalhamento.xlsx"
-arquivo_saida = "status_e_detalhamento_limpo.xlsx"
+arquivo_entrada = "detalhamento/detalhe.xlsx"
+arquivo_saida = "detalhamento/detalhe_limpo.xlsx"
 
 # Carregar todas as abas
 xls = pd.ExcelFile(arquivo_entrada, engine='openpyxl')

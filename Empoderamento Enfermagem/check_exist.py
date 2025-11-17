@@ -19,6 +19,8 @@ def verificar_nomes(arquivo_excel, nome_coluna_1='Nome 1', nome_coluna_2='Nome 2
     print("✅ Arquivos gerados:")
     print("- nomes_presentes.xlsx → nomes de 'Nome 2' que estão em 'Nome 1'")
     print("- nomes_ausentes.xlsx → nomes de 'Nome 2' que NÃO estão em 'Nome 1'")
+    
+
 
 # Exemplo de uso
 verificar_nomes('novo.xlsx')
