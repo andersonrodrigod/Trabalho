@@ -40,6 +40,8 @@ def layout_geral_elogio():
     #st.subheader("Elogios e Queixas")
     #st.dataframe(elogio_queixa)
     #st.subheader("Tabela Total de Notas")
+
+    st.subheader("Respostas: Resumo Geral")
     st.dataframe(resposta)
 
     # ======= TABELA ELOGIOS E QUEIXAS: RESUMO GERAL =======
