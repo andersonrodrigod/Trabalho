@@ -1,0 +1,142 @@
+⭐ ETAPA 1 — Pré-processamento (preprocess.py)
+
+Objetivo: Limpar os textos, normalizar colunas, padronizar categorias, remover ruídos.
+
+O que vai ter aqui:
+
+✔ Limpeza de texto:
+
+.lower()
+
+remover stopwords
+
+remover acentos
+
+remover caracteres estranhos
+
+tratar espaços duplicados
+
+✔ Preparar saída:
+
+Cada dataset limpo vai para:
+
+data/processed/coluna_1_clean.csv
+data/processed/coluna_2_clean.csv
+...
+
+⭐ ETAPA 2 — Feature Engineering (vectorization.py)
+
+Objetivo: Transformar texto em números.
+
+Aqui você escolhe:
+
+TF-IDF Vectorizer (recomendado no início)
+
+ou Bag-of-Words
+
+Esse arquivo vai transformar o dataset limpo em:
+
+X (features)
+
+y (rótulos)
+
+e salva vetorizadores como .pkl
+
+⭐ ETAPA 3 — Treinamento dos Modelos (train_motivo_model.py e train_sentimento_model.py)
+
+Objetivo: Criar e treinar:
+
+1. Modelo de Elogio/Queixa
+2. Modelo de Grupo (administração / médico / enfermagem…)
+3. Modelo de Motivo (5-10 opções)
+
+Usando:
+
+Logistic Regression
+
+Naive Bayes
+
+SVM
+
+Decision Tree (se quiser analisar interpretabilidade)
+
+E salvar os modelos:
+models/sentimento_model.pkl
+models/grupo_model.pkl
+models/motivo_model.pkl
+
+⭐ ETAPA 4 — Avaliação (evaluation.py)
+
+Gerar:
+
+Accuracy
+
+F1-score
+
+Matriz de confusão
+
+AUC-ROC
+
+Relatório de classificação
+
+Para cada modelo treinado.
+
+⭐ ETAPA 5 — Predição final (predict.py)
+
+Arquivo único que:
+
+Carrega os .pkl
+
+Carrega o vetorizador
+
+Recebe texto novo
+
+Classifica:
+
+Elogio ou Queixa
+
+Grupo
+
+Motivo
+
+E salva em:
+
+data/predictions/repostas_novembro.csv
+
+⭐ ETAPA 6 — (Opcional) API ou Streamlit para uso real
+
+Isso é quando você estiver confiante.
+Mas pode deixar para o final.
+
+🔥 ENTÃO AGORA VEM A PERGUNTA MAIS IMPORTANTE:
+👉 Por qual arquivo você quer começar agora?
+
+Escolha 1:
+
+1. preprocess.py
+
+(toda a limpeza de texto, padronização, tratamento)
+
+2. vectorization.py
+
+(transformações TF-IDF e preparação de features)
+
+3. train_sentimento_model.py ou train_grupo_model.py
+
+(já começar a treinar)
+
+4. evaluation.py
+
+(avaliação e métricas)
+
+5. predict.py
+
+(consumir modelo em produção)
+
+🧭 Minha recomendação profissional:
+
+Começamos por preprocess.py, porque TODO o resto depende disso.
+Se a base estiver suja, nada presta.
+
+Mas você escolhe.
+Qual passo vamos implementar agora?

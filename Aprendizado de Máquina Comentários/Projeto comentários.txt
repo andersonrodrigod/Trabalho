@@ -1,0 +1,352 @@
+projeto_ml_comentarios/
+│
+├── data/
+│   ├── raw/                  # Dados brutos (como vieram do WhatsApp / BI)
+│   ├── processed/            # Dados limpos e padronizados
+│   ├── labeled/              # Dados rotulados por humanos (as 3 pesquisas)
+│   └── predictions/          # Saída das classificações automáticas
+│
+├── models/
+│   ├── sentiment_model.pkl   # Modelo de Sentimento
+│   ├── tipo_model.pkl        # Modelo de Tipo
+│   └── motivo_model.pkl      # Modelo de Motivo
+│
+├── notebooks/
+│   ├── 01_exploracao.ipynb   # Análise exploratória inicial (EDA)
+│   ├── 02_treinamento.ipynb  # Testes, experimentos, gráficos
+│   └── 03_avaliacao.ipynb    # Relatórios de erros, matriz de confusão
+│
+├── src/
+│   ├── preprocessing.py      # Limpeza de texto, TF-IDF, funções de preparo
+│   ├── train_sentiment.py    # Treino do modelo de sentimento
+│   ├── train_tipo.py         # Treino do modelo de tipo de reclamação
+│   ├── train_motivo.py       # Treino do modelo de motivo
+│   ├── predict.py            # Função geral para fazer previsões
+│   └── utils.py              # Funções auxiliares (logs, validações, etc.)
+│
+├── config/
+│   └── config.yaml           # Parâmetros do projeto (paths, nomes, etc.)
+│
+├── app/                      # (Opcional) Para futuramente usar Streamlit
+│   ├── app.py                # Interface para classificar comentários
+│   └── assets/
+│
+├── reports/
+│   ├── confusion_matrices/   # Matriz de confusão de cada modelo
+│   ├── metrics/              # Acurácia, recall, precisão
+│   └── logs/                 # Logs de re-treino e erros
+│
+├── tests/
+│   └── test_preprocessing.py # Testes simples das funções principais
+│
+├── requirements.txt          # Bibliotecas para reproduzir o projeto
+└── README.md                 # Explicação geral do projeto
+
+
+
+
+
+
+
+✅ 1. O seu projeto é perfeitamente VIÁVEL e muito bem estruturado
+
+Você tem:
+
+Comentários de clientes
+
+Notas de satisfação (1 a 5)
+
+Comentários já classificados por humanos
+
+Categorias de classificação (5 a 10 tipos)
+
+Motivos (5 a 10 tipos)
+
+E quer:
+
+Criar um modelo que classifique automaticamente
+
+Descobrir quando o modelo erra
+
+Ajustar o modelo ao longo do tempo
+
+Identificar se o comentário é elogio / crítica
+
+Identificar tipo e motivo da reclamação
+
+Tornar o processo automático
+
+Isso é um pipeline completo de NLP aplicado a Customer Experience.
+
+🧨 2. Problema principal: a nota não é totalmente confiável
+
+Você percebeu corretamente:
+
+Algumas pessoas erram a nota
+
+Outras deixam elogio com nota alta mas fazem ressalva
+
+Outras deixam nota alta mas criticam no texto
+
+Outras erram na primeira pergunta
+
+Isso significa que NÃO dá para usar a nota como verdade absoluta.
+
+A nota pode ajudar como sinal fraco, mas não deve ser usada como rótulo principal.
+
+✔ O que você deve fazer:
+Será o comentário escrito que vai orientar a classificação.
+
+✔ O que você pode fazer:
+Usar a nota como recurso extra apenas para melhorar o modelo, não para definir rótulos.
+
+🔥 3. Você tem 3 pesquisas já classificadas — isso é ouro puro
+
+Esse é o ponto mais valioso.
+
+Essas pesquisas são:
+
+Seus dados rotulados
+
+Seu treino supervisionado
+
+Sua fonte para ensinar o modelo
+
+Você já tem o essencial para treinar um classificador.
+
+🎯 4. O seu projeto tem na verdade 3 tarefas de NLP, não apenas uma
+
+Vamos organizar de forma profissional:
+
+(A) Detectar se o comentário é elogio, neutro ou queixa
+
+→ Tarefa 1: Classificação de Sentimento / Polaridade
+
+(B) Identificar o tipo da reclamação/elogio
+
+→ Tarefa 2: Classificação Multiclasse
+
+Ex:
+
+Atendimento
+
+Médico
+
+Faturamento
+
+Atraso
+
+Explicação
+
+Estrutura
+
+Etc.
+
+(C) Identificar o motivo específico
+
+→ Tarefa 3: Outra classificação multiclasse separada
+
+Ex:
+
+Falta de cordialidade
+
+Falta de clareza
+
+Cobrança indevida
+
+Tempo de espera
+
+Falha no sistema
+
+Etc.
+
+Essas 3 tarefas podem ser 3 modelos diferentes.
+Ou 1 único modelo multi-etapas.
+
+🧠 5. Por que separar as tarefas é melhor do que tentar prever tudo de uma vez
+
+Se você tentar um modelo só para prever:
+
+sentimento
+
+tipo
+
+motivo
+
+Tudo junto,
+→ Ele vai se confundir e errar mais.
+
+Separando:
+
+✔ Um modelo detecta sentimento
+✔ Outro detecta tipo
+✔ Outro detecta motivo
+
+Você tem mais controle, mais clareza e consegue melhorar cada parte separadamente.
+
+🧪 6. Como será o pipeline do projeto (ideia geral, sem pastas ainda)
+Etapa 1 — Preparar dados rotulados
+
+Pegar suas 3 pesquisas com:
+
+comentário
+
+sentimento (rótulo humano)
+
+tipo (rótulo humano)
+
+motivo (rótulo humano)
+
+Etapa 2 — Pré-processar texto
+
+Limpar:
+
+acentos
+
+símbolos
+
+stopwords
+
+caixa baixa
+
+normalizar texto
+
+Etapa 3 — Transformar texto em números
+
+Usar TF-IDF.
+
+Etapa 4 — Treinar 3 modelos
+
+Modelo A: sentimento
+
+Modelo B: tipo
+
+Modelo C: motivo
+
+Primeira versão: Logistic Regression.
+Simples, eficaz, ótimo para texto.
+
+Etapa 5 — Avaliar erros
+
+Usar:
+
+Confusion Matrix
+
+Accuracy
+
+Cross-validation
+
+E descobrir por que o modelo erra:
+
+comentários muito curtos
+
+ironia
+
+palavras ambíguas
+
+categorias parecidas demais
+
+falta de dados em certas categorias
+
+Etapa 6 — Correção humana
+
+Os erros viram:
+
+→ novos exemplos rotulados
+→ o que chamamos de dados de reforço
+
+Etapa 7 — Re-treinar periodicamente
+
+Pode ser semanal ou mensal.
+
+Assim o modelo vai ficando mais inteligente com o tempo.
+
+🧱 7. O que você precisa estudar AGORA (exatamente o necessário)
+(1) Pré-processamento de texto
+
+stopwords
+
+stemming ou lemmatization
+
+limpar caracteres
+
+normalizar texto
+
+(2) TF-IDF
+
+Essencial para transformar texto em números.
+
+(3) Logistic Regression
+
+Seu modelo principal.
+
+(4) Treinar e testar modelo
+
+train_test_split
+
+accuracy
+
+confusion_matrix
+
+(5) Pipeline básico com scikit-learn
+
+Muito útil para organizar passos.
+
+(6) Cross-validation
+
+Para medir performance real.
+
+(7) Grid Search
+
+Para melhorar hiperparâmetros depois.
+
+Você NÃO precisa agora:
+
+❌ Árvores
+❌ KNN
+❌ K-means
+❌ Bootstrap Aggregation
+❌ Hierarchical Clustering
+
+Esses são avanços opcionais.
+
+O foco é texto → TF-IDF → Logistic Regression.
+
+🧩 8. O que você perguntou no final: “Da pra identificar as ve…”
+
+Sim.
+Dá pra identificar:
+
+✔ Elogio
+✔ Queixa
+✔ Queixa mascarada de elogio
+✔ Elogio com ressalva
+✔ Erro de nota (sentimento e nota não batem)
+
+Isso é feito por:
+
+padrões de palavras
+
+modelos de polaridade
+
+modelo customizado em português
+
+Podemos até detectar inconsistência entre nota e texto.
+
+🏆 9. Quer que eu desenhe agora a arquitetura final?
+
+Antes de criar pastas, eu posso:
+
+Desenhar o esquema completo
+
+Mostrar os arquivos do projeto
+
+Organizar tudo no padrão profissional que você quer
+
+Criar o fluxo: ingestão → limpeza → treino → validação → produção
+
+Basta você dizer:
+
+👉 “Sim, quero a arquitetura final do projeto”
+
+Aí eu monto tudo com você, no seu estilo passo a passo.
