@@ -1,11 +1,10 @@
 import pandas as pd
 import unicodedata
+import re
 
 
 
-coluna_1 = ["ELOGIO OU QUEIXA", "GRUPO", "MOTIVO", "p1", "comentário p1"]
-
-caminho_arquivo = "data/labeled/coluna_1.csv"
+caminho_arquivo = "data/labeled/coluna_1_agosto_total.csv"
 
 def remover_acentos(texto):
     if isinstance(texto, str):
@@ -16,19 +15,38 @@ def remover_acentos(texto):
     return texto
 
 def limpar_texto(texto):
+    if not isinstance(texto,str):
+        return ""
+
+    texto = texto.lower()
+    texto = remover_acentos(texto)
+    texto = texto.replace("\n", " ")
+    texto = re.sub(r"[^a-z0-9\s.,!?]", " ", texto)
+    texto = " ".join(texto.split())
+
+    return texto
+
+caminho = "data/processed/coluna_1_agosto_total.csv"
+
+def pre_processamento(caminho):
+    print("Iniciando o pré-processamento da coluna 1...")
+
+    
+    df = pd.read_csv(caminho_arquivo, sep=",")
+
+    df = df.dropna()
+
+    df["comentario_p1"] = df["comentario_p1"].apply(limpar_texto)
+
+    df = df[df["elogio_ou_queixa"].isin(["ELOGIO", "QUEIXA"])]
+
+
+    df.to_csv(caminho, index=False)
+
     
 
 
-def pre_processamento():
-    print("Iniciando o pré-processamento da coluna 1...")
-
-    # 1 — LER ARQUIVO
-    df = pd.read_csv(caminho_arquivo, sep=",", encoding="utf-8")
-    df = df["comentario_p1"].apply(remover_acentos)
-    print(df.head(50))
 
 
 
-
-
-pre_processamento()
+pre_processamento(caminho)

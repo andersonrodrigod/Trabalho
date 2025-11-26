@@ -1,0 +1,52 @@
+Preprocessar dados (feito)
+
+Vectorizar (feito)
+
+Separar treino/teste (feito)
+
+Treinar modelo (feito)
+
+Avaliar modelo (passo atual) ← estamos aqui > abaixo eu coloco os passos depois de avaliar o modelo
+
+Ajustar modelo para melhorar desempenho (vem depois)
+
+Salvar modelo (depois de melhorar)
+
+Criar função de previsão (depois)
+
+
+
+
+
+
+# Avaliar modelo 
+
+OPÇÃO 1 — Balancear os dados (o ideal)
+
+Usar técnicas como:
+
+class_weight="balanced" no modelo
+
+aumentar dados das classes pequenas
+
+usar SMOTE (gerar amostras sintéticas)
+
+OPÇÃO 2 — Escolher outro modelo
+
+Por exemplo:
+
+Logistic Regression com class_weight
+
+RandomForest
+
+SVM com balanceamento
+
+OPÇÃO 3 — Definir estratégia do negócio
+
+Pode ser que:
+
+ELOGIO é muito raro
+
+QUEIXA é a mais importante para o hospital
+
+A classe ELOGIO/QUEIXA talvez nem precise existir separada
