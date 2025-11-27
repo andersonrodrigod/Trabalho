@@ -1,14 +1,17 @@
 import pandas as pd
+import numpy as np
+import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.calibration import CalibratedClassifierCV
+
+# testes de outros modelos
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
-from sklearn.calibration import CalibratedClassifierCV
 from sklearn.svm import SVC 
-import numpy as np
-import joblib
+
 
 df = pd.read_csv("data/processed/coluna_1_teste.csv")
 
@@ -36,7 +39,7 @@ calibrated_nb.fit(X_train, y_train)
 probs = calibrated_nb.predict_proba(X_test)
 preds = calibrated_nb.predict(X_test)
 
-threshold = 0.60
+threshold = 0.90
 new_preds = []
 
 for prob, pred in zip(probs, preds):
@@ -51,8 +54,8 @@ print(threshold)
 print(confusion_matrix(y_test, new_preds))
 print(classification_report(y_test, new_preds))
 
-joblib.dump(calibrated_nb, "models/coluna_1_nb.pkl") # salva o modelo treinado
-joblib.dump(vectorizer, "models/coluna_1_vectorizer.pkl") # salva o vetorizer
+#joblib.dump(calibrated_nb, "models/coluna_1_nb.pkl") # salva o modelo treinado
+#joblib.dump(vectorizer, "models/coluna_1_vectorizer.pkl") # salva o vetorizer
 
 
 

@@ -6,22 +6,22 @@ import numpy as np
 # ------------------
 # CONFIGURAÇÕES
 # ------------------
-THRESHOLD = 0.90   # ponto de corte que você escolheu
+THRESHOLD = 0.90   # ponto de corte: só aceitamos a classe se a probabilidade for >= 0.90
 
 # ------------------
 # CARREGAR MODELO E VETORIZER
 # ------------------
-model = joblib.load("./coluna_1_nb.pkl")
-vectorizer = joblib.load("./coluna_1_vectorizer.pkl")
+model_path = "models/coluna_1_nb.pkl"
+vectorizer_path = "models/coluna_1_vectorizer.pkl"
+
+model = joblib.load(model_path)
+vectorizer = joblib.load(vectorizer_path)
 
 # ------------------
-# RECEBER ARQUIVO COMO ARGUMENTO
+# RECEBER ARQUIVO 
 # ------------------
-if len(sys.argv) < 2:
-    print("Uso: python predict_csv.py arquivo_para_prever.csv")
-    sys.exit()
 
-arquivo = sys.argv[1]
+arquivo = "src/coluna_1/coluna_1_agosto.csv"
 
 # ------------------
 # LER ARQUIVO
@@ -57,6 +57,7 @@ df["probabilidade_de_acerto"] = (probs.max(axis=1) * 100).round(2).astype(str) +
 # ------------------
 # SALVAR RESULTADO
 # ------------------
+
 saida = arquivo.replace(".csv", "_previsao.csv")
 df.to_csv(saida, index=False, encoding="utf-8-sig")
 

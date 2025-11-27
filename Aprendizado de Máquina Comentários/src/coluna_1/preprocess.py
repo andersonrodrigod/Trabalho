@@ -4,7 +4,8 @@ import re
 
 
 
-caminho_arquivo = "data/labeled/coluna_1_agosto_total.csv"
+caminho_arquivo = "data/labeled/coluna_1/coluna_1_grupo.csv"
+caminho_vai = "data/processed/coluna_1_grupo.csv"
 
 def remover_acentos(texto):
     if isinstance(texto, str):
@@ -26,8 +27,6 @@ def limpar_texto(texto):
 
     return texto
 
-caminho = "data/processed/coluna_1_agosto_total.csv"
-
 def pre_processamento(caminho):
     print("Iniciando o pré-processamento da coluna 1...")
 
@@ -38,7 +37,7 @@ def pre_processamento(caminho):
 
     df["comentario_p1"] = df["comentario_p1"].apply(limpar_texto)
 
-    df = df[df["elogio_ou_queixa"].isin(["ELOGIO", "QUEIXA"])]
+    #df = df[df["grupo"].isin(["ELOGIO", "QUEIXA"])]
 
 
     df.to_csv(caminho, index=False)
@@ -49,4 +48,4 @@ def pre_processamento(caminho):
 
 
 
-pre_processamento(caminho)
+pre_processamento(caminho_vai)

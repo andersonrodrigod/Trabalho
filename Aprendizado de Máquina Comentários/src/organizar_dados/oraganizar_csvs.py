@@ -1,9 +1,9 @@
 import pandas as pd
 from load_data import carregar_arquivo_excel
 
-arquivo = "data/raw/Planilha Agosto.xlsx"
+arquivo = "data/raw/Planilha Junho.xlsx"
 
-coluna_1 = [ "ELOGIO OU QUEIXA", 'GRUPO', 'MOTIVO',
+coluna_1 = [ 'ELOGIO OU QUEIXA', 'GRUPO', 'MOTIVO.1' 
        'comentário p1']
 
 coluna_2 = ['ELOGIO OU QUEIXA.1', 'GRUPO.1', 'MOTIVO.1',
@@ -58,7 +58,7 @@ def pre_processamento(df, colunas):
 
 
 
-    df.to_csv("data/labeled/coluna_1_agosto_total.csv", index=False)
+    df.to_csv("data/labeled/coluna_1/coluna_1_grupo_junho.csv", index=False)
 
 
 pre_processamento(df, coluna_1)
