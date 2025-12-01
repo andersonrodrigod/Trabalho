@@ -1,0 +1,32 @@
+1. Padrões de citações de palavra na opção RECEPÇAO
+
+1386 casos de RECEPÇAO
+
+193 casos de recepção que foram citados "recepcionista" 
+300 casos de recepção que foram citados "recepção"
+
+155 casos que citam recepcionista mas não citam recepção
+262 casos que citam recepção mas não citam recepcionista
+
+# Palavras mais frequentes em RECEPÇAO
+
+lista_recepcao = ['recepcao', 'atendimento', 'demora', 'recepcionista', 'cirurgia', 'hospital', 'paciente', 'internacao', 'tempo', 'horas', 'espera', 'totem', 'atendida', 'esperando', 'entrada', 'demorou', 'informacoes', 'informacao', 'atencao', 'recepcionistas', 'demorado', 'procedimento', 'medico', 'jejum', 'atendentes', 'parto', 'atender', 'atendido', 'aguardando', 'emergencia', 'atendente', 'equipe', 'ficha', 'profissionais', 'funcionarios', 'aguardar', 'pacientes', 'quarto', 'medica', 'maqueiro', 'chegamos', 'local', 'cadeira', 'volta', 'gente', 'pessoal', 'super', 'marcada', 'frente', 'porteiro']
+
+
+
+
+
+2. Padrões de citações de palavra na opção ADMINISTATIVO
+
+# Palavras mais frequentes em ADMINISTRATIVO
+
+lista_administrativo = ['hospital', 'cirurgia', 'atendimento', 'demora', 'paciente', 'horas', 'quarto', 'internacao', 'leito', 'medico', 'recepcao', 'plano', 'tempo', 'pacientes', 'parto', 'equipe', 'espera', 'procedimento', 'emergencia', 'medica', 'esperando', 'atendida', 'demorou', 'exames', 'profissionais', 'cirurgico', 'medicacao', 'exame', 'enfermaria', 'aguardando', 'medicos', 'acompanhante', 'internada', 'cadeira', 'entrada', 'consulta', 'convenio', 'jejum', 'apartamento', 'observacao', 'informacoes', 'informacao', 'local', 'atendido', 'centro', 'funcionarios', 'saude', 'internado', 'atender', 'pronto']
+
+2206 casos de ADMINISTRATIVO
+45 casos de recepção que foram citados "recepcionista" 
+135 casos de recepção que foram citados "recepção"
+
+126 casos que citam recepcionista mas não citam recepção
+36 casos que citam recepção mas não citam recepcionista
+
+
