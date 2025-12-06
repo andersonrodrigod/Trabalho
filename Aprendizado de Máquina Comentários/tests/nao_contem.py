@@ -25,7 +25,7 @@ palavras_recepcao_filtradas = [p for p in palavras_recepcao if len(p) > 4 and p 
 
 cont_administrativo = Counter(palavras_administrativo_filtradas)
 cont_recepcao = Counter(palavras_recepcao_filtradas)
-print(cont_administrativo)
+#print(cont_administrativo)
 
 so_no_administrativo = set(cont_administrativo.keys()) - set(cont_recepcao.keys())
 so_no_recepcao = set(cont_recepcao.keys()) - set(cont_administrativo.keys())
@@ -35,15 +35,15 @@ resultados_so_no_recepcao = {palavra: cont_recepcao[palavra] for palavra in so_n
 
 
 lista_palavras_so_no_administrativo = []
-for palavra, cont in Counter(resultados_so_no_administrativo).most_common(50):
+for palavra, cont in Counter(resultados_so_no_administrativo).most_common(30):
     lista_palavras_so_no_administrativo.append(palavra)
 
 lista_pavras_so_no_recepcao = []
-for palavra, cont in Counter(resultados_so_no_recepcao).most_common(50):
+for palavra, cont in Counter(resultados_so_no_recepcao).most_common(30):
     lista_pavras_so_no_recepcao.append(palavra)
 
-#print(lista_palavras_so_no_administrativo)
-#print(lista_pavras_so_no_recepcao)
+print(lista_palavras_so_no_administrativo)
+print(lista_pavras_so_no_recepcao)
 
 lista_palavras_so_no_administrativo = ['infeccao', 'leite', 'contar', 'feira', 'elogia', 'particular', 'consigo', 'faleceu', 'material', 'leitos', 'pneumonia', 'longe', 'comida', 'tomografia', 'ortopedista', 'biopsia', 'negligencia', 'gracas', 'fisioterapia', 'administracao', 'relatei', 'coracao', 'hospitais', 'julho', 'ouvidoria', 'obstetra', 'inducao', 'protocolo', 'conforto', 'anterior', 'conseguiu', 'visitas', 'anestesia', 'dormir', 'operar', 'dificuldades', 'visivel', 'justica', 'tenha', 'medicacoes', 'pesquisa', 'acomodar', 'triste', 'prestado', 'acionar', 'atraves', 'hospitalar', 'sexta', 'pudesse', 'comecei']
 

@@ -1,10 +1,10 @@
 import pandas as pd
 
 # Load the base Excel file and read the 'BASE' sheet
-df_base = pd.read_excel("MES_OUTUBRO.xlsx", sheet_name="BASE", dtype=str, engine="openpyxl")
+df_base = pd.read_excel("NOVEMBRO GERAL.xlsx", sheet_name="BASE", dtype=str, engine="openpyxl")
 
 # Load the new telephone data
-df_tel = pd.read_excel("complica_minas_55.xlsx", dtype=str, engine="openpyxl")
+df_tel = pd.read_excel("complica_novembro_minas_55.xlsx", dtype=str, engine="openpyxl")
 
 # Select relevant columns and drop rows with missing Codigo or Telefone 2
 df_tel = df_tel[["Codigo", "Telefone 2"]].dropna(subset=["Codigo", "Telefone 2"])
@@ -31,4 +31,4 @@ df_base["TELEFONE"] = df_base.apply(
 )
 
 # Save the updated BASE sheet to a new Excel file
-df_base.to_excel("MES_OUTUBRO2_atualizado.xlsx", sheet_name="BASE", index=False, engine="openpyxl")
+df_base.to_excel("NOVEMBRO GERAL_atualizado.xlsx", sheet_name="BASE", index=False, engine="openpyxl")
