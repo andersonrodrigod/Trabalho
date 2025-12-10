@@ -4,7 +4,7 @@ import pandas as pd
 df_abas = pd.read_excel("novos_contatos.xlsx", sheet_name=None)
 
 df_novos = df_abas["novos_contatos"]
-df_nao_lidos = df_abas["contatos_nao_lidos"]
+df_nao_lidos = df_abas["contatos_nao_lidos"] 
 df_lidos = df_abas["contatos_lidos"]
 df_lidos_nao_respondidos = df_abas["lidos_nao_respondidos"]
 df_segundo_envio = df_abas["segundo_envio_lidas"]
@@ -13,16 +13,19 @@ df_segundo_envio = df_abas["segundo_envio_lidas"]
 df_cod_nao_lidos = df_nao_lidos["Codigo"].dropna().astype(str)
 df_nome_nao_lidos = df_nao_lidos["Nome"].dropna().astype(str)
 df_prest_nao_lidos = df_nao_lidos["PRESTADOR"].dropna().astype(str)
+df_chave_nao_lidos = df_nao_lidos["Chave"].dropna().astype(str)
 
 df_cod_lidos_nao_respondidos = df_lidos_nao_respondidos["Codigo"].dropna().astype(str)
 df_nome_lidos_nao_respondidos = df_lidos_nao_respondidos["Nome"].dropna().astype(str)
 df_prest_lidos_nao_respondidos = df_lidos_nao_respondidos["PRESTADOR"].dropna().astype(str)
+df_chave_lidos_nao_respondidos = df_lidos_nao_respondidos["Chave"].dropna().astype(str)
 
 
 novos_cod = df_novos["Codigo"].astype(str)
 novos_nome = df_novos["Nome"].astype(str)
 novos_prest = df_novos["PRESTADOR"].astype(str)
 novos_envio = df_novos["ENVIO"]
+novos_chave = df_novos["Chave"].astype(str)
 
 # 1️⃣ Condição 1: Código bate → envia
 cond_codigo_nao_lidas = novos_cod.isin(df_cod_nao_lidos)
