@@ -28,14 +28,14 @@ def automar_fuction(df):
 
     time.sleep(2)
 
-    colunas_telefone = ["Telefone 1", "Telefone 2", "Telefone 3", "Telefone 4"]
+    colunas_telefone = ["TELEFONE RELATORIO", "TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]
     df[colunas_telefone] = df[colunas_telefone].fillna("").astype(str).apply(lambda col: col.str.strip())
-    df["Status Bot"] = df["Status Bot"].fillna("").astype(str).str.strip()
+    df["STATUS BOT"] = df["STATUS BOT"].fillna("").astype(str).str.strip()
     
 
     
-    for i, row in df[df["Status Bot"] == ""].iterrows():
-        codigo = str(row["Codigo"]).strip()
+    for i, row in df[df["STATUS BOT"] == ""].iterrows():
+        codigo = str(row["COD USUARIO"]).strip()
         automacao_codigo_inicio(codigo)
         #print(codigo)
         copy_vazio()
@@ -51,7 +51,7 @@ def automar_fuction(df):
 
         if not conteudo_copy:
             #print(f"Código {codigo}: sem conteúdo no Ctrl+C. Pulando para próxima linha.")
-            df.at[i, "Status Bot"] = "BASE INCORRETA"
+            df.at[i, "STATUS BOT"] = "BASE INCORRETA"
             #print(f"Código {codigo}: sem conteúdo no Ctrl+C. Pulando para próxima linha.")
             automacao_codigo_next_sem_dado() 
             continue 
@@ -93,11 +93,11 @@ def automar_fuction(df):
             elif cor == "VERDE" and resultado == "NOVO" and telefone not in telefones_existentes:
                 telefone_final = telefone
                 print("Número diferente, levando para o Excel.")
-                for col in ["Telefone 2", "Telefone 3", "Telefone 4"]:
+                for col in ["TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]:
                     if row[col] == "":
                         df.at[i, col] = telefone
-                        print(f"Código {codigo}: número adicionado em {col}")
-                        df.at[i, "Status Bot"] = "NOVO CONTATO"
+                        print(f"COD USUARIO {codigo}: número adicionado em {col}")
+                        df.at[i, "STATUS BOT"] = "NOVO CONTATO"
                         telefone_adicionado = True
                         break
                 if telefone_adicionado:
@@ -146,8 +146,8 @@ def automar_fuction(df):
                     if j == 1:
                         print("segundo loop")
                         py.press("esc")
-                        if df.at[i, "Status Bot"] not in ["NOVO CONTATO", "MESMO CONTATO"]:
-                            df.at[i, "Status Bot"] = "SEM CONTATO"
+                        if df.at[i, "STATUS BOT"] not in ["NOVO CONTATO", "MESMO CONTATO"]:
+                            df.at[i, "STATUS BOT"] = "SEM CONTATO"
                         break
                     continue     
                 telefone = ajustar_numero_telefone(telefone)
@@ -169,8 +169,8 @@ def automar_fuction(df):
                 elif telefone in telefones_existentes:
                     repeticoes_telefone += 1
                     print(f"Número igual ({repeticoes_telefone}x), tentando novamente...")
-                    if df.at[i, "Status Bot"] != "NOVO CONTATO":
-                        df.at[i, "Status Bot"] = "MESMO CONTATO"
+                    if df.at[i, "STATUS BOT"] != "NOVO CONTATO":
+                        df.at[i, "STATUS BOT"] = "MESMO CONTATO"
                     if repeticoes_telefone >= 4:
                         print("Número repetido 4 vezes. Encerrando.")
                         break
@@ -180,8 +180,8 @@ def automar_fuction(df):
                     consecutivos_invalidos += 1
                     if consecutivos_invalidos >= 2:
                         print("Dois números inválidos consecutivos. Encerrando.")
-                        if df.at[i, "Status Bot"] not in ["NOVO CONTATO", "MESMO CONTATO"]:
-                            df.at[i, "Status Bot"] = "SEM CONTATO"
+                        if df.at[i, "STATUS BOT"] not in ["NOVO CONTATO", "MESMO CONTATO"]:
+                            df.at[i, "STATUS BOT"] = "SEM CONTATO"
                         break 
             
             print("final")
@@ -197,10 +197,10 @@ def automar_fuction(df):
                 print("Salvando número preto do segundo loop.")
 
             if telefone_final:
-                for col in ["Telefone 2", "Telefone 3", "Telefone 4"]:
+                for col in ["TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]:
                     if row[col] == "":
                         df.at[i, col] = telefone_final
-                        df.at[i, "Status Bot"] = "NOVO CONTATO"
+                        df.at[i, "STATUS BOT"] = "NOVO CONTATO"
                         telefone_adicionado = True
                         break
                        
@@ -210,21 +210,21 @@ def automar_fuction(df):
 
         # Salvar checkpoint a cada 1 linhas
         if i % 2 == 0:
-            df.to_excel("complica_novembro_sp.xlsx", index=False)
+            df.to_excel("complica_novembro_hap.xlsx", index=False)
             #print(f"Checkpoint salvo na linha {i}")
 
 
         automacao_codigo_next()  
         
     
-    df.to_excel("complica_novembro_sp.xlsx", index=False)
+    df.to_excel("complica_novembro_hap.xlsx", index=False)
     #print("Salvamento final concluído.")
 
 
 
 
 
-dados = "complica_novembro_sp.xlsx"
+dados = "complica_novembro_hap.xlsx"
 
 automar_fuction(dados)
 

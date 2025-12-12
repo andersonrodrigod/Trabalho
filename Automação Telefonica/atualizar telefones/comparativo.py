@@ -3,7 +3,7 @@ import pandas as pd
 # Lê os arquivos
 antigo = pd.read_excel("NOVEMBRO GERAL.xlsx", sheet_name="BASE", dtype=str)
 novo = pd.read_excel("NOVEMBRO GERAL_atualizado.xlsx", sheet_name="BASE", dtype=str)
-dados = pd.read_excel("complica_novembro_sp_55.xlsx", dtype=str)[["Codigo", "Telefone 2"]].dropna()
+dados = pd.read_excel("complica_novembro_hap_55.xlsx", dtype=str)[["Codigo", "Telefone 2"]].dropna()
 
 # Remove duplicados de COD USUARIO nos dois arquivos
 antigo_unico = antigo.drop_duplicates(subset="COD USUARIO", keep=False)
