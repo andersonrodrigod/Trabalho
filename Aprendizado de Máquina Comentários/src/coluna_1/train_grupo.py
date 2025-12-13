@@ -49,7 +49,7 @@ for prob, pred in zip(probs, preds):
 
 new_preds = np.array(new_preds)
 
-"""print(threshold)
+print(threshold)
 print(accuracy_score(y_test, new_preds))
 print(confusion_matrix(y_test, new_preds))
-print(classification_report(y_test, new_preds))"""
+print(classification_report(y_test, new_preds))
