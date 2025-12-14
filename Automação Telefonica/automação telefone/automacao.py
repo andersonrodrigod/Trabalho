@@ -28,6 +28,28 @@ def automacao_codigo_inicio(codigo):
     py.press("enter")
     time.sleep(0.5)
 
+def automacao_nome_inicio(nome):
+    py.press("tab")
+    time.sleep(0.5)
+    pyperclip.copy(nome)
+    print(nome)
+    time.sleep(0.5)
+    py.hotkey("ctrl", "v")
+    time.sleep(0.5)
+    py.press("f8")
+    time.sleep(0.5)
+
+    verificar_cor_vermelho_puro(121, 159)
+
+    copy_vazio()
+
+    py.press("enter")
+    py.press("enter")
+    py.press("enter")
+    time.sleep(0.5)
+    py.press("enter")
+    time.sleep(0.5)
+
 
 def verificar_cor_vermelho_puro(x, y):
     time.sleep(0.5)
@@ -58,14 +80,28 @@ def automacao_codigo_next():
 
     py.click(54,120)
     time.sleep(0.5)
+    
+def automacao_nome_next():
+    py.click(54,120)
+    time.sleep(0.5)
+    py.press("f7")
+    time.sleep(0.5)
 
+    py.click(880,121)
+    py.press("up")
+    time.sleep(0.5)
+    py.press("enter")
+    time.sleep(0.5)
+
+    py.click(54,120)
+    time.sleep(0.5)
+    py.press("tab")
 
 def automacao_codigo_next_sem_dado():
     py.click(54,120)
     time.sleep(0.5)
     py.press("f7")
     time.sleep(0.5)
-
 
 def pegar_telefone():
     time.sleep(0.5)
@@ -122,7 +158,4 @@ def verificar_cor_pixel(x, y):
 
     print("Nenhuma cor válida encontrada.")
     return False
-
-import pyautogui as py
-import time
 
