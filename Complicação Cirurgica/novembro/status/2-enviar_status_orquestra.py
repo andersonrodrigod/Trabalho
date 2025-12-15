@@ -29,6 +29,22 @@ status_colunas = {
     "MKT messages": "OPT_OUT"
 }
 
+colunas_dados_envio_telefonico = [
+    "BASE",
+    "COD USUARIO",
+    "USUARIO",
+    "PRESTADOR",
+    "PROCEDIMENTO",
+    "TELEFONE ENVIADO",
+    "ULTIMO STATUS DE ENVIO",
+    "RESPONDIDO",
+    "ENVIO",
+    "STATUS TELEFONE",
+    "STATUS CHAVE",
+    "CHAVE RELATORIO",
+    "CHAVE STATUS",
+]
+
 # garantir que todas as colunas existem e são numéricas
 for coluna in status_colunas.values():
     if coluna not in df_novos.columns:
@@ -45,12 +61,12 @@ for coluna in status_colunas.values():
 # ------------------------------------------------------------
 df_status_last = df_status.sort_values(by=df_status.columns.tolist()).groupby("Contato").last().reset_index()
 
-print("✔ Mantida somente a ÚLTIMA linha encontrada por Contato.\n")
+#print("✔ Mantida somente a ÚLTIMA linha encontrada por Contato.\n")
 
 # Merge
 print("🔍 Procurando correspondências entre Nome e nome_manipulado...")
 df_merge = df_novos.merge(
-    df_status_last[["nome_manipulado", "Status", "Telefone", "Contato", "Respondido"]],
+    df_status_last[["nome_manipulado", "Status", "Telefone", "Contato", "Respondido", "Data do envio"]],
     left_on="USUARIO",
     right_on="nome_manipulado",
     how="left"
@@ -61,9 +77,13 @@ df_merge["ULTIMO STATUS DE ENVIO"] = df_merge["Status"]
 df_merge["TELEFONE ENVIADO"] = df_merge["Telefone"]
 df_merge["CHAVE STATUS"] = df_merge["Contato"]
 df_merge["RESPONDIDO"] = df_merge["Respondido"]
-
+df_merge["ENVIO"] = df_merge["Data do envio"]
+ 
 total_encontrados = df_merge["ULTIMO STATUS DE ENVIO"].notna().sum()
-print(f"✔ Total de nomes encontrados no status_f_tratado: {total_encontrados}\n")
+mask_status_recebido = df_merge["ULTIMO STATUS DE ENVIO"].notna()
+
+
+#print(f"✔ Total de nomes encontrados no status_f_tratado: {total_encontrados}\n")
 
 # Somar status apenas para quem realmente teve atualização nova
 for status, coluna in status_colunas.items():
@@ -103,15 +123,39 @@ df_merge["STATUS TELEFONE"] = df_merge.apply(
     axis=1
 )
 
+ch_respondidos = set(abas["usuarios_respondidos"]["CHAVE RELATORIO"].astype(str))
+ch_lidos = set(abas["usuarios_lidos"]["CHAVE RELATORIO"].astype(str))
+ch_nao_lidos = set(abas["usuarios_nao_lidos"]["CHAVE RELATORIO"].astype(str))
+
+def definir_processo(chave):
+    if chave in ch_respondidos:
+        return "RESPONDIDO"
+    elif chave in ch_lidos:
+        return "LIDO"
+    elif chave in ch_nao_lidos:
+        return "NÃO LIDO"
+    else:
+        return "SEM RESULTADO"
+
+df_merge["PROCESSO"] = df_merge["CHAVE RELATORIO"].astype(str).apply(definir_processo)
+
+df_dados_envio_telefonico = (
+    df_merge.loc[mask_status_recebido, colunas_dados_envio_telefonico + ["PROCESSO"]]
+    .copy()
+)
+
+
 # Remover temporários
-df_merge = df_merge.drop(columns=["nome_manipulado", "Status", "Contato", "Telefone", "Respondido"], errors="ignore")
+df_merge = df_merge.drop(columns=["nome_manipulado", "Status", "Contato", "Telefone", "Respondido", "Data do envio"], errors="ignore")
 
 
 # ------------------------------------------------------------
 # 🔥 SUBSTITUIR A ABA MODIFICADA E SALVAR TODAS AS ABAS
 # ------------------------------------------------------------
 
+
 abas["usuarios"] = df_merge
+abas["dados_envio_telefonico"] = df_dados_envio_telefonico
 
 print("💾 Salvando novos_contatos_atualizado.xlsx com TODAS as abas ...")
 with pd.ExcelWriter("novos_contatos_atualizados.xlsx", engine='openpyxl') as writer:

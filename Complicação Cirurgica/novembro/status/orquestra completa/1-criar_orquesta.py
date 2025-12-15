@@ -4,7 +4,7 @@ import pandas as pd
 # 1) LEITURA DO ARQUIVO
 # ==========================================================
 print("📘 Lendo arquivo NOVEMBRO GERAL.xlsx aba BASE...")
-df = pd.read_excel("NOVEMBRO GERAL 13.12.xlsx", sheet_name="BASE")
+df = pd.read_excel("NOVEMBRO GERAL.xlsx", sheet_name="BASE")
 
 print("🧽 Normalizando colunas...")
 df.columns = df.columns.str.strip()
@@ -37,6 +37,32 @@ colunas_finais = [
     'STATUS TELEFONE', 'STATUS CHAVE', 'QT TELEFONE', 'QT LIDA',
     'QT ENTREGUE', 'QT ENVIADA', 'QT NAO_ENTREGUE_META',
     'QT MENSAGEM_NAO_ENTREGUE', 'QT EXPERIMENTO', 'QT OPT_OUT'
+]
+
+# ==========================================================
+# 3.1) COLUNAS DA ABA DADOS_ENVIO_TELEFONICO (LOG DE DISPAROS)
+# ==========================================================
+colunas_envio_telefonico = [
+    'BASE',
+    'COD USUARIO',
+    'USUARIO',
+    'PRESTADOR',
+    'PROCEDIMENTO',
+    'TELEFONE ENVIADO',
+    'TIPO TELEFONE',
+    'DATA ENVIO',
+    'ENVIO_ID',
+    'TENTATIVA',
+    'ULTIMO STATUS DE ENVIO',
+    'LIDA',
+    'RESPONDIDO',
+    'ENTREGUE',
+    'STATUS TELEFONE',
+    'STATUS CHAVE',
+    'SOMA STATUS',
+    'CHAVE RELATORIO',
+    'CHAVE STATUS',
+    'PROCESSO'
 ]
 
 
@@ -124,7 +150,7 @@ abas_vazias = {
     "CCG": df_vazio
 }
 
-
+df_dados_envio_telefonico = pd.DataFrame(columns=colunas_envio_telefonico)
 # ==========================================================
 # 9) SALVAR ARQUIVO FINAL
 # ==========================================================
@@ -137,7 +163,8 @@ with pd.ExcelWriter("novos_contatos.xlsx", engine="openpyxl") as writer:
     df_respondidos_p1.to_excel(writer, sheet_name="usuarios_respondidos", index=False)
     df_nao_respondidos_p1.to_excel(writer, sheet_name="usuarios_nao_respondidos_p1", index=False)
     df_duplicados.to_excel(writer, sheet_name="usuarios_duplicados", index=False)
-
+    df_dados_envio_telefonico.to_excel(writer, sheet_name="dados_envio_telefonico", index=False)
+    
     for aba, tabela in abas_vazias.items():
         tabela.to_excel(writer, sheet_name=aba, index=False)
 

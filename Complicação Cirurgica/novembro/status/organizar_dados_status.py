@@ -66,15 +66,15 @@ print(f"   ✔ Linhas indesejadas removidas. Total excluídas: {linhas_deletadas
 # 3) SE RESPONDIDO == 'Sim', ENTÃO STATUS = 'Lida'
 # ------------------------------------------------------------
 
-print("📌 Ajustando Status para 'Lida' quando Respondido = 'Sim'...")
+"""print("📌 Ajustando Status para 'Lida' quando Respondido = 'Sim'...")
 
 status_antes2 = df["Status"].copy()
 df.loc[df["Respondido"] == "Sim", "Status"] = "Lida"
 alteracoes_lida = (status_antes2 != df["Status"]).sum()
 
 print(f"   ✔ Coluna Status ajustada para quem respondeu 'Sim'. Alterações feitas: {alteracoes_lida}\n")
-
-# ------------------------------------------------------------
+"""
+#------------------------------------------------------------
 # 4) TRATAR A COLUNA CONTATO – REMOVER TUDO APÓS O PRIMEIRO "_"
 # ------------------------------------------------------------
 
