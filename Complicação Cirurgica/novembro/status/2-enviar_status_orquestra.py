@@ -148,6 +148,21 @@ df_dados_envio_telefonico = (
 # Remover temporários
 df_merge = df_merge.drop(columns=["nome_manipulado", "Status", "Contato", "Telefone", "Respondido", "Data do envio"], errors="ignore")
 
+# ------------------------------------------------------------
+# 🔥 CONCATENAR COM HISTÓRICO DE dados_envio_telefonico
+# ------------------------------------------------------------
+
+if "dados_envio_telefonico" in abas:
+    df_historico = abas["dados_envio_telefonico"].copy()
+
+    # Garantir mesmas colunas (evita erro silencioso)
+    df_historico = df_historico.reindex(columns=df_dados_envio_telefonico.columns)
+
+    df_dados_envio_telefonico = pd.concat(
+        [df_historico, df_dados_envio_telefonico],
+        ignore_index=True
+    )
+
 
 # ------------------------------------------------------------
 # 🔥 SUBSTITUIR A ABA MODIFICADA E SALVAR TODAS AS ABAS

@@ -3,7 +3,7 @@ import numpy as np
 from controle_usuarios import ingestao_usuarios
 
 print("📘 Lendo NOVEMBRO GERAL.xlsx ...")
-df_base = pd.read_excel("NOVEMBRO GERAL1.xlsx", sheet_name="BASE")
+df_base = pd.read_excel("NOVEMBRO GERAL.xlsx", sheet_name="BASE")
 df_base.columns = df_base.columns.str.strip()
 
 print("📗 Lendo novos_contatos.xlsx ...")
@@ -14,17 +14,18 @@ abas = ingestao_usuarios(df_base, abas)
 # -------------------------
 # COLUNAS FINAIS PADRÃO
 # -------------------------
+
 colunas_finais = [
     'STATUS BOT', 'BASE', 'COD USUARIO', 'USUARIO',
     'TELEFONE RELATORIO', 'TELEFONE 1', 'TELEFONE 2', 'TELEFONE 3', 'TELEFONE 4', 'TELEFONE 5',
     'PRESTADOR', 'PROCEDIMENTO', 'TP ATENDIMENTO', 'DT INTERNACAO', 'ENVIO',
-    'ULTIMO STATUS DE ENVIO', 'LIDA', 'ENTREGUE', 'ENVIADA',
+    'ULTIMO STATUS DE ENVIO', "RESPONDIDO", 'LIDA', 'ENTREGUE', 'ENVIADA',
     'NAO_ENTREGUE_META', 'MENSAGEM_NAO_ENTREGUE', 'EXPERIMENTO', 'OPT_OUT',
     'TELEFONE ENVIADO', 'CHAVE RELATORIO', 'CHAVE STATUS',
     'STATUS TELEFONE', 'STATUS CHAVE',
     'QT TELEFONE', 'QT LIDA', 'QT ENTREGUE', 'QT ENVIADA',
     'QT NAO_ENTREGUE_META', 'QT MENSAGEM_NAO_ENTREGUE',
-    'QT EXPERIMENTO', 'QT OPT_OUT'
+    'QT EXPERIMENTO', 'QT OPT_OUT', "PROCESSO"
 ]
 
 # -------------------------
