@@ -9,7 +9,7 @@ df_base.columns = df_base.columns.str.strip()
 print("📗 Lendo novos_contatos.xlsx ...")
 abas = pd.read_excel("novos_contatos.xlsx", sheet_name=None)
 
-abas = ingestao_usuarios(df_base, abas)
+#abas = ingestao_usuarios(df_base, abas)
 
 # -------------------------
 # COLUNAS FINAIS PADRÃO

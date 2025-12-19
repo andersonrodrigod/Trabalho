@@ -6,10 +6,10 @@ arquivo = "complica_novembro_hap.xlsx"
 df = pd.read_excel(arquivo)
 
 # 2. Garantir que a coluna "Telefone 1" seja tratada como string
-df["Telefone 2"] = df["Telefone 2"].astype(str)
+df["TELEFONE 2"] = df["TELEFONE 2"].astype(str)
 
 # 3. Adicionar '55' na frente dos números que não começam com '55'
-df["Telefone 2"] = df["Telefone 2"].apply(
+df["TELEFONE 2"] = df["TELEFONE 2"].apply(
     lambda x: "55" + x if not x.startswith("55") else x
 )
 

@@ -6,17 +6,17 @@ df_base = pd.read_excel("NOVEMBRO GERAL.xlsx", sheet_name="BASE", dtype=str, eng
 # Load the new telephone data
 df_tel = pd.read_excel("complica_novembro_hap_55.xlsx", dtype=str, engine="openpyxl")
 
-# Select relevant columns and drop rows with missing Codigo or Telefone 2
-df_tel = df_tel[["Codigo", "Telefone 2"]].dropna(subset=["Codigo", "Telefone 2"])
+# Select relevant columns and drop rows with missing COD USUARIO or TELEFONE 2
+df_tel = df_tel[["COD USUARIO", "TELEFONE 2"]].dropna(subset=["COD USUARIO", "TELEFONE 2"])
 
-# Clean the Codigo.2 values to remove leading/trailing spaces and invisible characters
-df_tel["Codigo"] = df_tel["Codigo"].astype(str).str.strip().str.replace('\u00A0', '', regex=True)
+# Clean the COD USUARIO values to remove leading/trailing spaces and invisible characters
+df_tel["COD USUARIO"] = df_tel["COD USUARIO"].astype(str).str.strip().str.replace('\u00A0', '', regex=True)
 
-# Clean the Telefone 2 values and preserve 'sem numero' as valid
-df_tel["Telefone 2"] = df_tel["Telefone 2"].astype(str).str.strip()
+# Clean the TELEFONE 2 values and preserve 'sem numero' as valid
+df_tel["TELEFONE 2"] = df_tel["TELEFONE 2"].astype(str).str.strip()
 
 # Create a dictionary for quick lookup
-tel_dict = df_tel.drop_duplicates(subset="Codigo").set_index("Codigo")["Telefone 2"].to_dict()
+tel_dict = df_tel.drop_duplicates(subset="COD USUARIO").set_index("COD USUARIO")["TELEFONE 2"].to_dict()
 
 # Clean the COD USUARIO column in the base file
 df_base["COD USUARIO"] = df_base["COD USUARIO"].astype(str).str.strip().str.replace('\u00A0', '', regex=True)

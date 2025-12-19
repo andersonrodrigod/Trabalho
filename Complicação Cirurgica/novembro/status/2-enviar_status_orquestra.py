@@ -2,23 +2,31 @@ import pandas as pd
 import numpy as np
 from controle_usuarios import retornar_registros_para_usuarios
 
+# ============================================================
+# LEITURA DOS ARQUIVOS
+# ============================================================
+
 print("📘 Lendo a planilha novos_contatos.xlsx ...")
 abas = pd.read_excel("novos_contatos.xlsx", sheet_name=None)
 abas = retornar_registros_para_usuarios(abas)
-df_novos = abas["usuarios"]
+df_novos = abas["usuarios"].copy()
 print("   ✔ Aba usuarios carregada!\n")
 
 print("📗 Lendo a planilha status.xlsx ...")
 df_status = pd.read_excel("status.xlsx")
 print("   ✔ Planilha tratada carregada!\n")
 
-# Normalizar strings
+# ============================================================
+# NORMALIZAÇÃO
+# ============================================================
+
 df_novos["USUARIO"] = df_novos["USUARIO"].astype(str).str.strip()
 df_status["nome_manipulado"] = df_status["nome_manipulado"].astype(str).str.strip()
 
-# ------------------------------------------------------------
-# 🔥 PARTE NOVA: Processar o ULTIMO STATUS ANTES do merge
-# ------------------------------------------------------------
+# ============================================================
+# MAPA DE STATUS
+# ============================================================
+
 status_colunas = {
     "Lida": "LIDA",
     "Entregue": "ENTREGUE",
@@ -45,26 +53,59 @@ colunas_dados_envio_telefonico = [
     "CHAVE STATUS",
 ]
 
-# garantir que todas as colunas existem e são numéricas
-for coluna in status_colunas.values():
-    if coluna not in df_novos.columns:
-        df_novos[coluna] = np.nan
+# ============================================================
+# GARANTIR COLUNAS DE STATUS E QT
+# ============================================================
 
-# garantir também as colunas QT para cada status
-for coluna in status_colunas.values():
-    qt_col = "QT " + coluna
+for col in status_colunas.values():
+    if col not in df_novos.columns:
+        df_novos[col] = np.nan
+
+    qt_col = "QT " + col
     if qt_col not in df_novos.columns:
         df_novos[qt_col] = np.nan
 
-# ------------------------------------------------------------
-# 🔥 NOVO: manter apenas a ÚLTIMA informação por Contato
-# ------------------------------------------------------------
-df_status_last = df_status.sort_values(by=df_status.columns.tolist()).groupby("Contato").last().reset_index()
 
-#print("✔ Mantida somente a ÚLTIMA linha encontrada por Contato.\n")
+# ============================================================
+# PRESERVAR STATUS ANTIGO
+# ============================================================
 
-# Merge
-print("🔍 Procurando correspondências entre Nome e nome_manipulado...")
+df_novos["STATUS_ANTIGO"] = df_novos["ULTIMO STATUS DE ENVIO"]
+
+# ============================================================
+# 🔥 EVENTOS REAIS NA status.xlsx (BASE DE DECISÃO)
+# ============================================================
+
+df_status["EVENTO_REAL"] = (
+    df_status["Contato"].astype(str) + "|" +
+    df_status["Telefone"].astype(str) + "|" +
+    df_status["Data do envio"].astype(str)
+)
+
+df_eventos_status = (
+    df_status
+    .groupby("Contato")["EVENTO_REAL"]
+    .nunique()
+    .rename("QT_EVENTOS_STATUS")
+    .reset_index()
+)
+
+# ============================================================
+# PEGAR ÚLTIMO STATUS POR CONTATO
+# ============================================================
+
+df_status_last = (
+    df_status
+    .sort_values(by=df_status.columns.tolist())
+    .groupby("Contato")
+    .last()
+    .reset_index()
+)
+
+# ============================================================
+# MERGE
+# ============================================================
+
 df_merge = df_novos.merge(
     df_status_last[["nome_manipulado", "Status", "Telefone", "Contato", "Respondido", "Data do envio"]],
     left_on="USUARIO",
@@ -72,108 +113,135 @@ df_merge = df_novos.merge(
     how="left"
 )
 
-# Criar coluna final
+df_merge = df_merge.merge(
+    df_eventos_status,
+    on="Contato",
+    how="left"
+)
+
+# ============================================================
+# ATRIBUIÇÕES
+# ============================================================
+
 df_merge["ULTIMO STATUS DE ENVIO"] = df_merge["Status"]
 df_merge["TELEFONE ENVIADO"] = df_merge["Telefone"]
 df_merge["CHAVE STATUS"] = df_merge["Contato"]
 df_merge["RESPONDIDO"] = df_merge["Respondido"]
 df_merge["ENVIO"] = df_merge["Data do envio"]
- 
-total_encontrados = df_merge["ULTIMO STATUS DE ENVIO"].notna().sum()
+
 mask_status_recebido = df_merge["ULTIMO STATUS DE ENVIO"].notna()
 
 
-#print(f"✔ Total de nomes encontrados no status_f_tratado: {total_encontrados}\n")
+# ============================================================
+# SOMAR STATUS NOVO (REGRA FINAL)
+# ============================================================
 
-# Somar status apenas para quem realmente teve atualização nova
 for status, coluna in status_colunas.items():
-    
-    # condição: só atualizar LINHAS que receberam status novo no merge
-    cond = (df_merge["ULTIMO STATUS DE ENVIO"] == status) & (df_merge["Status"].notna())
 
-    # se a coluna estava vazia, vira 0
+    cond_mudou_status = (
+        (df_merge["ULTIMO STATUS DE ENVIO"] == status) &
+        (df_merge["ULTIMO STATUS DE ENVIO"] != df_merge["STATUS_ANTIGO"])
+    )
+
+    cond_mesmo_status_novo_evento = (
+        (df_merge["ULTIMO STATUS DE ENVIO"] == status) &
+        (df_merge["ULTIMO STATUS DE ENVIO"] == df_merge["STATUS_ANTIGO"]) &
+        (df_merge["QT_EVENTOS_STATUS"].fillna(1) > 1)
+    )
+
+    cond = cond_mudou_status | cond_mesmo_status_novo_evento
+
+    # coluna principal
     df_merge.loc[cond & df_merge[coluna].isna(), coluna] = 0
-
-    # se já existia valor antes, soma +1
     df_merge.loc[cond & df_merge[coluna].notna(), coluna] += 1
 
-    # Preparar QT coluna (se estiver vazia, vira 0)
+    # coluna QT
     qt_col = "QT " + coluna
     df_merge.loc[cond & df_merge[qt_col].isna(), qt_col] = 0
-
-    # Soma na QT coluna
     df_merge.loc[cond, qt_col] += 1
 
-# ------------------------------------------------------------
-# 🔍 VERIFICAÇÕES FINAIS: CHAVE E TELEFONE
-# ------------------------------------------------------------
+# ============================================================
+# VERIFICAÇÕES DE CHAVE E TELEFONE
+# ============================================================
 
-# 1) Verificação da CHAVE
 df_merge["STATUS CHAVE"] = np.where(
     df_merge["CHAVE STATUS"] == df_merge["CHAVE RELATORIO"],
     "OK",
     "ERRO"
 )
 
-# 2) Verificação dos telefones
-telefones_lista = ["TELEFONE RELATORIO", "TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]
+telefones_lista = [
+    "TELEFONE RELATORIO", "TELEFONE 1", "TELEFONE 2",
+    "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"
+]
 
 df_merge["STATUS TELEFONE"] = df_merge.apply(
-    lambda row: "OK" if row["TELEFONE ENVIADO"] in [row[col] for col in telefones_lista] else "ERRO",
+    lambda r: "OK" if r["TELEFONE ENVIADO"] in [r[c] for c in telefones_lista] else "ERRO",
     axis=1
 )
+
+# ============================================================
+# PROCESSO
+# ============================================================
 
 ch_respondidos = set(abas["usuarios_respondidos"]["CHAVE RELATORIO"].astype(str))
 ch_lidos = set(abas["usuarios_lidos"]["CHAVE RELATORIO"].astype(str))
 ch_nao_lidos = set(abas["usuarios_nao_lidos"]["CHAVE RELATORIO"].astype(str))
 
-def definir_processo(chave):
-    if chave in ch_respondidos:
+def definir_processo(ch):
+    if ch in ch_respondidos:
         return "RESPONDIDO"
-    elif chave in ch_lidos:
+    elif ch in ch_lidos:
         return "LIDO"
-    elif chave in ch_nao_lidos:
+    elif ch in ch_nao_lidos:
         return "NÃO LIDO"
     else:
         return "SEM RESULTADO"
 
 df_merge["PROCESSO"] = df_merge["CHAVE RELATORIO"].astype(str).apply(definir_processo)
 
+# ============================================================
+# DADOS DE ENVIO TELEFÔNICO
+# ============================================================
+
 df_dados_envio_telefonico = (
     df_merge.loc[mask_status_recebido, colunas_dados_envio_telefonico + ["PROCESSO"]]
     .copy()
 )
 
-
-# Remover temporários
-df_merge = df_merge.drop(columns=["nome_manipulado", "Status", "Contato", "Telefone", "Respondido", "Data do envio"], errors="ignore")
-
-# ------------------------------------------------------------
-# 🔥 CONCATENAR COM HISTÓRICO DE dados_envio_telefonico
-# ------------------------------------------------------------
+# ============================================================
+# CONCATENAR HISTÓRICO
+# ============================================================
 
 if "dados_envio_telefonico" in abas:
-    df_historico = abas["dados_envio_telefonico"].copy()
-
-    # Garantir mesmas colunas (evita erro silencioso)
-    df_historico = df_historico.reindex(columns=df_dados_envio_telefonico.columns)
-
+    hist = abas["dados_envio_telefonico"].copy()
+    hist = hist.reindex(columns=df_dados_envio_telefonico.columns)
     df_dados_envio_telefonico = pd.concat(
-        [df_historico, df_dados_envio_telefonico],
+        [hist, df_dados_envio_telefonico],
         ignore_index=True
     )
 
+# ============================================================
+# LIMPEZA
+# ============================================================
 
-# ------------------------------------------------------------
-# 🔥 SUBSTITUIR A ABA MODIFICADA E SALVAR TODAS AS ABAS
-# ------------------------------------------------------------
+df_merge = df_merge.drop(
+    columns=[
+        "nome_manipulado", "Status", "Contato", "Telefone",
+        "Respondido", "Data do envio", "QT_EVENTOS_STATUS"
+    ],
+    errors="ignore"
+)
 
+# ============================================================
+# SALVAR
+# ============================================================
 
 abas["usuarios"] = df_merge
 abas["dados_envio_telefonico"] = df_dados_envio_telefonico
 
-print("💾 Salvando novos_contatos_atualizado.xlsx com TODAS as abas ...")
-with pd.ExcelWriter("novos_contatos_atualizados.xlsx", engine='openpyxl') as writer:
+print("💾 Salvando novos_contatos_atualizado.xlsx ...")
+with pd.ExcelWriter("novos_contatos_atualizados.xlsx", engine="openpyxl") as writer:
     for nome_aba, df in abas.items():
         df.to_excel(writer, sheet_name=nome_aba, index=False)
 
