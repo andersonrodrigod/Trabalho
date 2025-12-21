@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from controle_usuarios import retornar_registros_para_usuarios
+import warnings
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 # ============================================================
 # LEITURA DOS ARQUIVOS
@@ -16,12 +18,21 @@ print("📗 Lendo a planilha status.xlsx ...")
 df_status = pd.read_excel("status.xlsx")
 print("   ✔ Planilha tratada carregada!\n")
 
+
+
 # ============================================================
 # NORMALIZAÇÃO
 # ============================================================
 
-df_novos["USUARIO"] = df_novos["USUARIO"].astype(str).str.strip()
-df_status["nome_manipulado"] = df_status["nome_manipulado"].astype(str).str.strip()
+df_novos["CHAVE RELATORIO"] = df_novos["CHAVE RELATORIO"].astype(str).str.strip().str.replace(r"\s+", " ", regex=True)
+df_status["Contato"] = df_status["Contato"].astype(str).str.strip().str.replace(r"\s+", " ", regex=True)
+df_status["DATA_ENVIO"] = pd.to_datetime(df_status["Data do envio"], dayfirst=True, errors="coerce")
+df_status["DATA_AGENDAMENTO"] = pd.to_datetime(df_status["Data agendamento"], dayfirst=True, errors="coerce")
+df_status["ENVIO"] = df_status["DATA_ENVIO"].fillna(df_status["DATA_AGENDAMENTO"])
+df_status["NOME_NORM"] = df_status["nome_manipulado"].astype(str).str.strip().str.upper()
+df_status["TELEFONE_NORM"] = df_status["Telefone"].astype(str).str.replace(r"\D", "", regex=True)
+
+print("Datas finais inválidas:", df_status["ENVIO"].isna().sum())
 
 # ============================================================
 # MAPA DE STATUS
@@ -36,6 +47,17 @@ status_colunas = {
     "Número é parte de um experimento": "EXPERIMENTO",
     "MKT messages": "OPT_OUT"
 }
+
+colunas_para_atualizar = [
+    "CHAVE RELATORIO",
+    "LIDA",
+    "ENTREGUE",
+    "ENVIADA",
+    "NAO_ENTREGUE_META",
+    "MENSAGEM_NAO_ENTREGUE",
+    "EXPERIMENTO",
+    "OPT_OUT"
+]
 
 colunas_dados_envio_telefonico = [
     "BASE",
@@ -61,188 +83,135 @@ for col in status_colunas.values():
     if col not in df_novos.columns:
         df_novos[col] = np.nan
 
-    qt_col = "QT " + col
-    if qt_col not in df_novos.columns:
-        df_novos[qt_col] = np.nan
-
-
 # ============================================================
-# PRESERVAR STATUS ANTIGO
+# VERIFICAR QUEM ESTÁ NA LISTA DE STATUS
 # ============================================================
 
-df_novos["STATUS_ANTIGO"] = df_novos["ULTIMO STATUS DE ENVIO"]
+chaves_usuarios = set(df_novos["CHAVE RELATORIO"])
+chaves_status = set(df_status["Contato"])
+chaves_comuns = chaves_usuarios & chaves_status
 
-# ============================================================
-# 🔥 EVENTOS REAIS NA status.xlsx (BASE DE DECISÃO)
-# ============================================================
 
-df_status["EVENTO_REAL"] = (
-    df_status["Contato"].astype(str) + "|" +
-    df_status["Telefone"].astype(str) + "|" +
-    df_status["Data do envio"].astype(str)
+
+df_status_validos = df_status[df_status["Contato"].isin(chaves_comuns)]
+usuarios_sem_chave = df_novos.loc[~df_novos["CHAVE RELATORIO"].isin(chaves_status),["USUARIO", "TELEFONE RELATORIO"]].copy()
+
+
+
+df_status_ordenado = df_status_validos.sort_values("ENVIO")
+usuarios_sem_chave["NOME_NORM"] = usuarios_sem_chave["USUARIO"].astype(str).str.strip().str.upper()
+usuarios_sem_chave["TELEFONE_NORM"] = usuarios_sem_chave["TELEFONE RELATORIO"].astype(str).str.replace(r"\D", "", regex=True)
+
+#print("Sem chave:", usuarios_sem_chave.shape[0])
+
+
+df_status_fallback = df_status.merge(
+    usuarios_sem_chave,
+    on=["NOME_NORM", "TELEFONE_NORM"],
+    how="inner"
 )
+df_status_fallback = df_status_fallback[df_status.columns]
+print("Colunas fallback:")
+print(df_status_fallback.columns)
+#print("Fallback matches:", df_status_fallback.shape[0])
 
-df_eventos_status = (
-    df_status
-    .groupby("Contato")["EVENTO_REAL"]
-    .nunique()
-    .rename("QT_EVENTOS_STATUS")
+
+df_status_unificado = pd.concat(
+    [df_status_validos, df_status_fallback],
+    ignore_index=True
+).drop_duplicates()
+
+df_status_ordenado = df_status_unificado.sort_values("ENVIO")
+
+df_contagem = (df_status_unificado.groupby(["Contato", "Status"])).size().reset_index(name="QT_STATUS")
+df_ultimo_status = (df_status_unificado.groupby("Contato").last().reset_index())
+
+print("STATUS VIA CHAVE:", df_status_validos.shape[0])
+print("STATUS VIA FALLBACK:", df_status_fallback.shape[0])
+print("STATUS UNIFICADO:", df_status_unificado.shape[0])
+
+
+df_ultimo_status = df_ultimo_status.rename(columns={
+    "Contato": "CHAVE STATUS",
+    "Status": "ULTIMO STATUS DE ENVIO",
+    "Respondido": "RESPONDIDO",
+    "ENVIO": "ENVIO",
+    "Telefone": "TELEFONE ENVIADO",
+})
+
+df_pivot = (
+    df_contagem
+    .pivot(index="Contato", columns="Status", values="QT_STATUS")
+    .fillna(0)
     .reset_index()
 )
 
-# ============================================================
-# PEGAR ÚLTIMO STATUS POR CONTATO
-# ============================================================
-
-df_status_last = (
-    df_status
-    .sort_values(by=df_status.columns.tolist())
-    .groupby("Contato")
-    .last()
-    .reset_index()
+df_estado_atual = df_novos.merge(
+    df_ultimo_status[
+        ["CHAVE STATUS", "ULTIMO STATUS DE ENVIO", "RESPONDIDO", "ENVIO", "TELEFONE ENVIADO"]
+    ],
+    left_on="CHAVE RELATORIO",
+    right_on="CHAVE STATUS",
+    how="left"
 )
+colunas_estado_atual = [
+    "ULTIMO STATUS DE ENVIO",
+    "CHAVE STATUS",
+    "RESPONDIDO",
+    "ENVIO",
+    "TELEFONE ENVIADO",
+]
 
-# ============================================================
-# MERGE
-# ============================================================
+for col in colunas_estado_atual:
+    if col in df_estado_atual.columns:
+        df_novos[col] = df_estado_atual[col]
 
-df_merge = df_novos.merge(
-    df_status_last[["nome_manipulado", "Status", "Telefone", "Contato", "Respondido", "Data do envio"]],
-    left_on="USUARIO",
-    right_on="nome_manipulado",
+df_usuarios_atualizados = df_novos.merge(
+    df_pivot,
+    left_on="CHAVE RELATORIO",
+    right_on="Contato",
     how="left"
 )
 
-df_merge = df_merge.merge(
-    df_eventos_status,
-    on="Contato",
-    how="left"
-)
-
-# ============================================================
-# ATRIBUIÇÕES
-# ============================================================
-
-df_merge["ULTIMO STATUS DE ENVIO"] = df_merge["Status"]
-df_merge["TELEFONE ENVIADO"] = df_merge["Telefone"]
-df_merge["CHAVE STATUS"] = df_merge["Contato"]
-df_merge["RESPONDIDO"] = df_merge["Respondido"]
-df_merge["ENVIO"] = df_merge["Data do envio"]
-
-mask_status_recebido = df_merge["ULTIMO STATUS DE ENVIO"].notna()
+for col in colunas_para_atualizar:
+    if col in df_usuarios_atualizados.columns:
+        df_novos[col] = df_usuarios_atualizados[col]
 
 
 # ============================================================
-# SOMAR STATUS NOVO (REGRA FINAL)
+# STATUS TELEFONE (INSPEÇÃO)
 # ============================================================
 
-for status, coluna in status_colunas.items():
+colunas_telefones = [
+    "TELEFONE RELATORIO",
+    "TELEFONE 1",
+    "TELEFONE 2",
+    "TELEFONE 3",
+    "TELEFONE 4",
+    "TELEFONE 5",
+]
 
-    cond_mudou_status = (
-        (df_merge["ULTIMO STATUS DE ENVIO"] == status) &
-        (df_merge["ULTIMO STATUS DE ENVIO"] != df_merge["STATUS_ANTIGO"])
-    )
+def validar_telefone(row):
+    telefone_enviado = str(row["TELEFONE ENVIADO"])
+    telefones_usuario = [str(row[col]) for col in colunas_telefones if col in row]
+    return "OK" if telefone_enviado in telefones_usuario else "ERRO"
 
-    cond_mesmo_status_novo_evento = (
-        (df_merge["ULTIMO STATUS DE ENVIO"] == status) &
-        (df_merge["ULTIMO STATUS DE ENVIO"] == df_merge["STATUS_ANTIGO"]) &
-        (df_merge["QT_EVENTOS_STATUS"].fillna(1) > 1)
-    )
-
-    cond = cond_mudou_status | cond_mesmo_status_novo_evento
-
-    # coluna principal
-    df_merge.loc[cond & df_merge[coluna].isna(), coluna] = 0
-    df_merge.loc[cond & df_merge[coluna].notna(), coluna] += 1
-
-    # coluna QT
-    qt_col = "QT " + coluna
-    df_merge.loc[cond & df_merge[qt_col].isna(), qt_col] = 0
-    df_merge.loc[cond, qt_col] += 1
+df_novos["STATUS TELEFONE"] = df_novos.apply(validar_telefone, axis=1)
 
 # ============================================================
-# VERIFICAÇÕES DE CHAVE E TELEFONE
+# STATUS CHAVE (INSPEÇÃO)
 # ============================================================
 
-df_merge["STATUS CHAVE"] = np.where(
-    df_merge["CHAVE STATUS"] == df_merge["CHAVE RELATORIO"],
+df_novos["STATUS CHAVE"] = np.where(
+    df_novos["CHAVE RELATORIO"] == df_novos["CHAVE STATUS"],
     "OK",
     "ERRO"
 )
-
-telefones_lista = [
-    "TELEFONE RELATORIO", "TELEFONE 1", "TELEFONE 2",
-    "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"
-]
-
-df_merge["STATUS TELEFONE"] = df_merge.apply(
-    lambda r: "OK" if r["TELEFONE ENVIADO"] in [r[c] for c in telefones_lista] else "ERRO",
-    axis=1
-)
-
-# ============================================================
-# PROCESSO
-# ============================================================
-
-ch_respondidos = set(abas["usuarios_respondidos"]["CHAVE RELATORIO"].astype(str))
-ch_lidos = set(abas["usuarios_lidos"]["CHAVE RELATORIO"].astype(str))
-ch_nao_lidos = set(abas["usuarios_nao_lidos"]["CHAVE RELATORIO"].astype(str))
-
-def definir_processo(ch):
-    if ch in ch_respondidos:
-        return "RESPONDIDO"
-    elif ch in ch_lidos:
-        return "LIDO"
-    elif ch in ch_nao_lidos:
-        return "NÃO LIDO"
-    else:
-        return "SEM RESULTADO"
-
-df_merge["PROCESSO"] = df_merge["CHAVE RELATORIO"].astype(str).apply(definir_processo)
-
-# ============================================================
-# DADOS DE ENVIO TELEFÔNICO
-# ============================================================
-
-df_dados_envio_telefonico = (
-    df_merge.loc[mask_status_recebido, colunas_dados_envio_telefonico + ["PROCESSO"]]
-    .copy()
-)
-
-# ============================================================
-# CONCATENAR HISTÓRICO
-# ============================================================
-
-if "dados_envio_telefonico" in abas:
-    hist = abas["dados_envio_telefonico"].copy()
-    hist = hist.reindex(columns=df_dados_envio_telefonico.columns)
-    df_dados_envio_telefonico = pd.concat(
-        [hist, df_dados_envio_telefonico],
-        ignore_index=True
-    )
-
-# ============================================================
-# LIMPEZA
-# ============================================================
-
-df_merge = df_merge.drop(
-    columns=[
-        "nome_manipulado", "Status", "Contato", "Telefone",
-        "Respondido", "Data do envio", "QT_EVENTOS_STATUS"
-    ],
-    errors="ignore"
-)
-
-# ============================================================
-# SALVAR
-# ============================================================
-
-abas["usuarios"] = df_merge
-abas["dados_envio_telefonico"] = df_dados_envio_telefonico
+abas["usuarios"] = df_novos
+#abas["dados_envio_telefonico"] = df_dados_envio_telefonico
 
 print("💾 Salvando novos_contatos_atualizado.xlsx ...")
-with pd.ExcelWriter("novos_contatos_atualizados.xlsx", engine="openpyxl") as writer:
+
+with pd.ExcelWriter("novos_contatos_atualizado.xlsx") as writer:
     for nome_aba, df in abas.items():
         df.to_excel(writer, sheet_name=nome_aba, index=False)
-
-print("🎉 Arquivo final criado com sucesso!")
