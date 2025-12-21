@@ -48,9 +48,11 @@ mask_lida1 = df_usuarios["LIDA"] == 1
 mask_lida2 = df_usuarios["LIDA"] == 2
 
 
-mask_acumalador = df_usuarios["SOMA_STATUS"] >= 5
+incremento = df_usuarios["SOMA_STATUS"] // 5
 
-df_usuarios.loc[mask_acumalador, "QT TELEFONE"] += 1
+mask_acumalador = incremento > 0
+
+df_usuarios.loc[mask_acumalador, "QT TELEFONE"] += incremento[mask_acumalador]
 df_usuarios.loc[mask_acumalador, colunas_status] = np.nan
 
 df_para_base = df_usuarios[mask_acumalador].copy()

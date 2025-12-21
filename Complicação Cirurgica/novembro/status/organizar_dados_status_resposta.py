@@ -1,9 +1,62 @@
 import pandas as pd
 
-print("📘 Lendo o arquivo status_f.xlsx ...")
+print("📘 Lendo o arquivo status.xlsx ...")
 df = pd.read_excel("status.xlsx")
 print("✅ Arquivo carregado com sucesso!\n")
 
+# ============================================================
+# 0) ATUALIZAÇÃO DE RESPOSTAS (ANTES DE QUALQUER CORREÇÃO)
+#    USANDO CONTATO + DATA DE ATENDIMENTO
+# ============================================================
+
+print("🔄 Atualizando coluna 'Resposta' a partir do arquivo status_resposta.xlsx...")
+
+df_resposta = pd.read_excel("status_resposta.xlsx")
+
+
+# ----------------------------
+# NORMALIZAÇÃO DAS CHAVES
+# ----------------------------
+
+# contato
+df["Contato"] = df["Contato"].astype(str).str.strip()
+df_resposta["nom_contato"] = df_resposta["nom_contato"].astype(str).str.strip()
+
+# cria nova coluna só com datas sem horas
+df["Data de envio"] = pd.to_datetime(df["Data do envio"], errors="coerce").dt.date
+
+print(df["Data de envio"].head())
+
+df_resposta["dat_atendimento"] = pd.to_datetime(
+    df_resposta["dat_atendimento"], errors="coerce", dayfirst=True
+).dt.date
+
+# ----------------------------
+# MERGE COM DUAS CHAVES
+# ----------------------------
+
+df = df.merge(
+    df_resposta[["nom_contato", "dat_atendimento", "resposta"]],
+    left_on=["Contato", "Data de envio"],
+    right_on=["nom_contato", "dat_atendimento"],
+    how="left"
+)
+
+# ----------------------------
+# AJUSTE FINAL
+# ----------------------------
+
+df["Resposta"] = df["resposta"].fillna("Sem resposta")
+
+df["Resposta"] = df["resposta"].fillna("Sem resposta")
+
+df.drop(
+    columns=["nom_contato", "dat_atendimento", "resposta"],
+    inplace=True,
+    errors="ignore"
+)
+
+print("   ✔ Coluna 'Resposta' atualizada com sucesso!\n")
 
 # ------------------------------------------------------------
 # 1) CORREÇÃO DE TEXTOS E CARACTERES SUBSTITUÍDOS
@@ -19,9 +72,6 @@ df["HSM"] = df["HSM"].replace({
 
 print("📅 Ajustando coluna 'Data de envio' para conter apenas a data...")
 
-df["Data de envio"] = pd.to_datetime(df["Data do envio"], errors="coerce").dt.date
-
-print(df["Data de envio"].head())
 
 print("   ✔ Coluna 'Data de envio' ajustada com sucesso!\n")
 
@@ -53,6 +103,11 @@ resp_antes = df["Respondido"].copy()
 df["Respondido"] = df["Respondido"].replace({
     "Nπo": "Não"
 })
+
+df["Resposta"] = df["Resposta"].replace({
+    "Nπo": "Não"
+})
+
 
 alteracoes_resp = (resp_antes != df["Respondido"]).sum()
 print(f"   ✔ Correções na coluna Respondido concluídas. Alterações feitas: {alteracoes_resp}\n")
@@ -92,7 +147,6 @@ print("✂ Limpando texto da coluna Contato...")
 contato_antes = df["Contato"].astype(str).copy()
 
 df["nome_manipulado"] = df["Contato"].astype(str).str.split("_").str[0]
-
 
 alteracoes_contato = (contato_antes != df["nome_manipulado"]).sum()
 

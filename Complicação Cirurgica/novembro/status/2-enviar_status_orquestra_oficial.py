@@ -41,8 +41,8 @@ df_status["Contato"] = df_status["Contato"].astype(str).str.strip()
 df_status["NOME_NORM"] = df_status["nome_manipulado"].astype(str).str.strip().str.upper()
 df_status["TELEFONE_NORM"] = df_status["Telefone"].astype(str).str.replace(r"\D", "", regex=True)
 
-df_status["DATA_ENVIO"] = pd.to_datetime(df_status["Data do envio"], dayfirst=True, errors="coerce")
-df_status["DATA_AGENDAMENTO"] = pd.to_datetime(df_status["Data agendamento"], dayfirst=True, errors="coerce")
+df_status["DATA_ENVIO"] = pd.to_datetime(df_status["Data de envio"], dayfirst=True, errors="coerce")
+df_status["DATA_AGENDAMENTO"] = (pd.to_datetime(df_status["Data agendamento"], dayfirst=True, errors="coerce").dt.date)
 df_status["DATA_EVENTO"] = df_status["DATA_ENVIO"].fillna(df_status["DATA_AGENDAMENTO"])
 
 df_status_invalidos = df_status[df_status["DATA_EVENTO"].isna()]
@@ -73,6 +73,7 @@ df_novos.loc[mask_chave, "ULTIMO STATUS DE ENVIO"] = df_novos.loc[mask_chave, "C
 df_novos.loc[mask_chave, "TELEFONE ENVIADO"]       = df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["Telefone"])
 df_novos.loc[mask_chave, "RESPONDIDO"]             = df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["Respondido"])
 df_novos.loc[mask_chave, "DATA_EVENTO"]            = df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["DATA_EVENTO"])
+df_novos.loc[mask_chave, "RESPOSTA"]            = df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["Resposta"])
 df_novos.loc[mask_chave, "CHAVE STATUS"]           = df_novos.loc[mask_chave, "CHAVE RELATORIO"]
 
 print("✔ VIA CHAVE:", mask_chave.sum())
@@ -99,8 +100,9 @@ df_novos.loc[mask_fallback, "TELEFONE ENVIADO"]       = idx_fb.map(map_fallback[
 df_novos.loc[mask_fallback, "RESPONDIDO"]             = idx_fb.map(map_fallback["Respondido"])
 df_novos.loc[mask_fallback, "DATA_EVENTO"]            = idx_fb.map(map_fallback["DATA_EVENTO"])
 df_novos.loc[mask_fallback, "CHAVE STATUS"]           = idx_fb.map(map_fallback["Contato"])
+df_novos.loc[mask_fallback, "RESPOSTA"]               = idx_fb.map(map_fallback["Resposta"])
 
-df_novos["ENVIO"] = df_novos["DATA_EVENTO"]
+df_novos["ENVIO"] = df_novos["DATA_EVENTO"].dt.strftime("%d/%m/%Y")
 
 # ============================================================
 # 3. CONTAGEM DE STATUS (SEM QUEBRAR BASE)
@@ -150,6 +152,13 @@ status_cols = list(status_colunas.values())
 
 df_export = df_novos.copy()
 
+# remover todas as colunas técnicas *_NORM
+df_export = df_export.loc[:, ~df_export.columns.str.endswith("_NORM")]
+
+# remover também DATA_EVENTO (coluna técnica)
+df_export = df_export.drop(columns=["DATA_EVENTO"], errors="ignore")
+
+# converter zeros de status para NaN apenas no export
 df_export[status_cols] = df_export[status_cols].replace(0, np.nan)
 
 

@@ -34,10 +34,10 @@ colunas_finais = [
     'STATUS BOT', 'BASE', 'COD USUARIO', 'USUARIO', 'TELEFONE RELATORIO',
     'TELEFONE 1', 'TELEFONE 2', 'TELEFONE 3', 'TELEFONE 4', 'TELEFONE 5',
     'PRESTADOR', 'PROCEDIMENTO', 'TP ATENDIMENTO', 'DT INTERNACAO', 'ENVIO',
-    'ULTIMO STATUS DE ENVIO','RESPONDIDO', 'LIDA', 'ENTREGUE', 'ENVIADA',
+    'ULTIMO STATUS DE ENVIO','RESPONDIDO', 'RESPOSTA', 'LIDA', 'ENTREGUE', 'ENVIADA',
     'NAO_ENTREGUE_META', 'MENSAGEM_NAO_ENTREGUE', 'EXPERIMENTO',
     'OPT_OUT', 'TELEFONE ENVIADO', 'CHAVE RELATORIO', 'CHAVE STATUS',
-    'STATUS TELEFONE', 'STATUS CHAVE', "PROCESSO"
+    'STATUS TELEFONE', 'STATUS CHAVE', "PROCESSO", "QT TELEFONE"
 ]
 
 # ==========================================================
@@ -162,7 +162,7 @@ with pd.ExcelWriter("novos_contatos.xlsx", engine="openpyxl") as writer:
     df_usuarios_nao_lidos.to_excel(writer, sheet_name="usuarios_nao_lidos", index=False)
     df_lidos.to_excel(writer, sheet_name="usuarios_lidos", index=False)
     df_respondidos_p1.to_excel(writer, sheet_name="usuarios_respondidos", index=False)
-    df_nao_respondidos_p1.to_excel(writer, sheet_name="usuarios_nao_respondidos_p1", index=False)
+    df_nao_respondidos_p1.to_excel(writer, sheet_name="usuarios_nao_respondidos", index=False)
     df_duplicados.to_excel(writer, sheet_name="usuarios_duplicados", index=False)
     df_dados_envio_telefonico.to_excel(writer, sheet_name="dados_envio_telefonico", index=False)
     
