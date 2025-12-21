@@ -16,6 +16,14 @@ df["HSM"] = df["HSM"].replace({
     "Pesquisa Complicaτ⌡es Cirurgicas": "Complicações cirurgicas"
 })
 
+print("📅 Ajustando coluna 'Data de envio' para conter apenas a data...")
+
+df["Data de envio"] = pd.to_datetime(df["Data do envio"], errors="coerce").dt.date
+
+print(df["Data de envio"].head())
+
+print("   ✔ Coluna 'Data de envio' ajustada com sucesso!\n")
+
 alteracoes_hsm = (hsm_antes != df["HSM"]).sum()
 print(f"   ✔ Correções na coluna HSM concluídas. Alterações feitas: {alteracoes_hsm}\n")
 
@@ -66,14 +74,14 @@ print(f"   ✔ Linhas indesejadas removidas. Total excluídas: {linhas_deletadas
 # 3) SE RESPONDIDO == 'Sim', ENTÃO STATUS = 'Lida'
 # ------------------------------------------------------------
 
-"""print("📌 Ajustando Status para 'Lida' quando Respondido = 'Sim'...")
+print("📌 Ajustando Status para 'Lida' quando Respondido = 'Sim'...")
 
 status_antes2 = df["Status"].copy()
 df.loc[df["Respondido"] == "Sim", "Status"] = "Lida"
 alteracoes_lida = (status_antes2 != df["Status"]).sum()
 
 print(f"   ✔ Coluna Status ajustada para quem respondeu 'Sim'. Alterações feitas: {alteracoes_lida}\n")
-"""
+
 #------------------------------------------------------------
 # 4) TRATAR A COLUNA CONTATO – REMOVER TUDO APÓS O PRIMEIRO "_"
 # ------------------------------------------------------------

@@ -14,8 +14,11 @@ abas = retornar_registros_para_usuarios(abas)
 df_novos = abas["usuarios"].copy()
 print("✔ usuarios carregado:", df_novos.shape)
 
+if "usuarios" not in abas:
+    raise ValueError("Aba 'usuarios' não encontrada")
+
 print("\n📗 Lendo status.xlsx ...")
-df_status = pd.read_excel("status.xlsx")
+df_status = pd.read_excel("status.xlsx", dtype={"Telefone": str, "Contato": str})
 print("✔ status carregado:", df_status.shape)
 
 status_colunas = {
@@ -41,6 +44,9 @@ df_status["TELEFONE_NORM"] = df_status["Telefone"].astype(str).str.replace(r"\D"
 df_status["DATA_ENVIO"] = pd.to_datetime(df_status["Data do envio"], dayfirst=True, errors="coerce")
 df_status["DATA_AGENDAMENTO"] = pd.to_datetime(df_status["Data agendamento"], dayfirst=True, errors="coerce")
 df_status["DATA_EVENTO"] = df_status["DATA_ENVIO"].fillna(df_status["DATA_AGENDAMENTO"])
+
+df_status_invalidos = df_status[df_status["DATA_EVENTO"].isna()]
+print("⚠️ Registros SEM DATA_EVENTO:", df_status_invalidos.shape[0])
 
 # ============================================================
 # ESTADO ATUAL (ÚLTIMO EVENTO)
@@ -94,7 +100,7 @@ df_novos.loc[mask_fallback, "RESPONDIDO"]             = idx_fb.map(map_fallback[
 df_novos.loc[mask_fallback, "DATA_EVENTO"]            = idx_fb.map(map_fallback["DATA_EVENTO"])
 df_novos.loc[mask_fallback, "CHAVE STATUS"]           = idx_fb.map(map_fallback["Contato"])
 
-print("✔ VIA FALLBACK:", mask_fallback.sum())
+df_novos["ENVIO"] = df_novos["DATA_EVENTO"]
 
 # ============================================================
 # 3. CONTAGEM DE STATUS (SEM QUEBRAR BASE)
@@ -140,15 +146,11 @@ def conf_tel(r):
 
 df_novos["STATUS TELEFONE"] = df_novos.apply(conf_tel, axis=1)
 
-print("\n🎨 Ajustando visual: convertendo zeros dos status para vazio (NaN)...")
-
 status_cols = list(status_colunas.values())
 
 df_export = df_novos.copy()
 
 df_export[status_cols] = df_export[status_cols].replace(0, np.nan)
-
-print("✔ Zeros convertidos para NaN apenas na versão de exportação")
 
 
 # ============================================================

@@ -38,8 +38,6 @@ abas_base = {
     "CLINIPAN": "CLINIPAN"
 }
 
-
-
 ch_usuarios = df_usuarios["CHAVE RELATORIO"].astype(str).str.strip()
 ch_respondidos = df_respondidos["CHAVE RELATORIO"].astype(str).str.strip()
 ch_lidos = df_lidos["CHAVE RELATORIO"].astype(str).str.strip()
@@ -50,7 +48,8 @@ mask_lida1 = df_usuarios["LIDA"] == 1
 mask_lida2 = df_usuarios["LIDA"] == 2
 
 
-mask_acumalador = df_usuarios["SOMA_STATUS"] >= 4
+mask_acumalador = df_usuarios["SOMA_STATUS"] >= 5
+
 df_usuarios.loc[mask_acumalador, "QT TELEFONE"] += 1
 df_usuarios.loc[mask_acumalador, colunas_status] = np.nan
 
