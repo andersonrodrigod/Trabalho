@@ -9,7 +9,7 @@ import time
 def copy_vazio():
     pyperclip.copy("")
 
-df = pd.read_excel("medicos_unicos.xlsx")
+df = pd.read_excel("medicos_unicos_ccg.xlsx")
 
 colunas_texto = [
     "STATUS ESPECIALISTA",
@@ -87,10 +87,16 @@ def automar_function(df):
         py.hotkey("ctrl", "c")
 
         if pyperclip.paste() == "" or especialista_1 == pyperclip.paste():
+            copy_vazio()
             df.at[idx, "ESPECIALIDADE 2"] = ""
             df.at[idx, "STATUS ESPECIALIDADE"] = "1 ESPECIALIDADE"
             df.at[idx, "STATUS ESPECIALISTA"] = "ESPECIALISTA CONCLUIDO"
-            py.press("pageup")
+            py.press("pagedown", presses=2, interval=0.4)
+            py.hotkey("ctrl", "c")
+            time.sleep(0.2)
+            especialista_3 = pyperclip.paste()
+            df.at[idx, "ESPECIALIDADE 3"] = especialista_3
+            py.press("pageup", presses=3, interval=0.4)
             time.sleep(1)
             py.press("f7")
             time.sleep(1)
@@ -104,7 +110,13 @@ def automar_function(df):
         df.at[idx, "STATUS ESPECIALIDADE"] = "2 ESPECIALIDADES"
         df.at[idx, "STATUS ESPECIALISTA"] = "ESPECIALISTA CONCLUIDO"
 
-        py.press("pageup")
+        py.press("up")
+        py.press("pagedown", presses=2, interval=0.4)
+        py.hotkey("ctrl", "c")
+        time.sleep(0.2)
+        especialista_3 = pyperclip.paste()
+        df.at[idx, "ESPECIALIDADE 3"] = especialista_3
+        py.press("pageup", presses=3, interval=0.4)
         time.sleep(1)
         py.press("f7")
         time.sleep(1)
@@ -114,9 +126,9 @@ def automar_function(df):
         
 
         
-        df.to_excel("medicos_unicos_atualizado.xlsx", index=False)
+        df.to_excel("medicos_unicos_ccg.xlsx", index=False)
         
-    df.to_excel("medicos_unicos_atualizado.xlsx", index=False)
+    df.to_excel("medicos_unicos_ccg.xlsx", index=False)
 
 
 
