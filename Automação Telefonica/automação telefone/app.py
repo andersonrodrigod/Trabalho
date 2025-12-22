@@ -93,7 +93,7 @@ def automar_fuction(df):
             elif cor == "VERDE" and resultado == "NOVO" and telefone not in telefones_existentes:
                 telefone_final = telefone
                 print("Número diferente, levando para o Excel.")
-                for col in ["TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]:
+                for col in ["TELEFONE RELATORIO", "TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]:
                     if row[col] == "":
                         df.at[i, col] = telefone
                         print(f"COD USUARIO {codigo}: número adicionado em {col}")
@@ -197,7 +197,7 @@ def automar_fuction(df):
                 print("Salvando número preto do segundo loop.")
 
             if telefone_final:
-                for col in ["TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]:
+                for col in ["TELEFONE RELATORIO","TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]:
                     if row[col] == "":
                         df.at[i, col] = telefone_final
                         df.at[i, "STATUS BOT"] = "NOVO CONTATO"
@@ -219,6 +219,7 @@ def automar_fuction(df):
     
     df.to_excel("complica_novembro_hap.xlsx", index=False)
     #print("Salvamento final concluído.")
+
 
 
 

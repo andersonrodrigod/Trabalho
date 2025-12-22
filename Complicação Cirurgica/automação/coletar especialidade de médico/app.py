@@ -4,8 +4,6 @@ import pyperclip
 import time
 
 
-
-
 def copy_vazio():
     pyperclip.copy("")
 
