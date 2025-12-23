@@ -1,19 +1,19 @@
 import pandas as pd
 
-arquivo = "complica_novembro_hap.xlsx"
+arquivo = "TOTAL_SEGUNDO_NOVEMBRO.xlsx"
 
 # 1. Ler o arquivo Excel
 df = pd.read_excel(arquivo)
 
 # 2. Garantir que a coluna "Telefone 1" seja tratada como string
-df["TELEFONE 2"] = df["TELEFONE 2"].astype(str)
+df["TELEFONE 1"] = df["TELEFONE 1"].astype(str)
 
 # 3. Adicionar '55' na frente dos números que não começam com '55'
-df["TELEFONE 2"] = df["TELEFONE 2"].apply(
+df["TELEFONE 1"] = df["TELEFONE 1"].apply(
     lambda x: "55" + x if not x.startswith("55") else x
 )
 
 # 4. Salvar o resultado em um novo arquivo
-df.to_excel("complica_novembro_hap_55.xlsx", index=False)
+df.to_excel("TOTAL_SEGUNDO_NOVEMBRO_55.xlsx", index=False)
 
-print("✅ Arquivo salvo com sucesso: complica_novembro_hap_55.xlsx")
+print("✅ Arquivo salvo com sucesso: TOTAL_SEGUNDO_NOVEMBRO_55.xlsx")

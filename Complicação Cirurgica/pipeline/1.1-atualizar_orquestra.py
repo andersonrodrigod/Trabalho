@@ -7,7 +7,7 @@ df_base = pd.read_excel("NOVEMBRO GERAL.xlsx", sheet_name="BASE")
 df_base.columns = df_base.columns.str.strip()
 
 print("📗 Lendo novos_contatos.xlsx ...")
-abas = pd.read_excel("novos_contatos.xlsx", sheet_name=None)
+abas = pd.read_excel("novos_contatos 23.12.xlsx", sheet_name=None)
 
 #abas = ingestao_usuarios(df_base, abas)
 
