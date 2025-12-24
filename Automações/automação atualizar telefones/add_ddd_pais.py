@@ -1,6 +1,6 @@
 import pandas as pd
 
-arquivo = "TOTAL_SEGUNDO_NOVEMBRO.xlsx"
+arquivo = "SEGUNDO CONTATO LIDOS NÃO RESPONDIDOS OU NAO IDENTIFICADOS.xlsx"
 
 # 1. Ler o arquivo Excel
 df = pd.read_excel(arquivo)
@@ -14,6 +14,6 @@ df["TELEFONE 1"] = df["TELEFONE 1"].apply(
 )
 
 # 4. Salvar o resultado em um novo arquivo
-df.to_excel("TOTAL_SEGUNDO_NOVEMBRO_55.xlsx", index=False)
+df.to_excel("SEGUNDO CONTATO LIDOS NÃO RESPONDIDOS OU NAO IDENTIFICADOS_55.xlsx", index=False)
 
-print("✅ Arquivo salvo com sucesso: TOTAL_SEGUNDO_NOVEMBRO_55.xlsx")
+print("✅ Arquivo salvo com sucesso: SEGUNDO CONTATO LIDOS NÃO RESPONDIDOS OU NAO IDENTIFICADOS_55.xlsx")
