@@ -5,9 +5,6 @@ import pyautogui as py
 from automacao import pegar_telefone, automacao_codigo_inicio, automacao_codigo_next, automacao_codigo_next_sem_dado, aplicar_filtro, verificar_cor_pixel
 from checar_dados import ajustar_numero_telefone, is_numero_telefone
 
-
-
-
 def copy_vazio():
     pyperclip.copy("")
 
@@ -24,7 +21,7 @@ def telefone_valido(telefone):
 
 def automar_fuction(df):
     
-    df = pd.read_excel(df, dtype=str)
+    df = pd.read_excel(df, dtype=str, sheet_name="HAP")
 
     time.sleep(2)
 
@@ -210,14 +207,14 @@ def automar_fuction(df):
 
         # Salvar checkpoint a cada 1 linhas
         if i % 2 == 0:
-            df.to_excel("complica_novembro_hap.xlsx", index=False)
+            df.to_excel("SETEMBRO_SEM_TELEFONE.xlsx", index=False, sheet_name="HAP")
             #print(f"Checkpoint salvo na linha {i}")
 
 
         automacao_codigo_next()  
         
     
-    df.to_excel("complica_novembro_hap.xlsx", index=False)
+    df.to_excel("SETEMBRO_SEM_TELEFONE.xlsx", index=False, sheet_name="HAP")
     #print("Salvamento final concluído.")
 
 
@@ -225,7 +222,7 @@ def automar_fuction(df):
 
 
 
-dados = "complica_novembro_hap.xlsx"
+dados = "SETEMBRO_SEM_TELEFONE.xlsx"
 
 automar_fuction(dados)
 
