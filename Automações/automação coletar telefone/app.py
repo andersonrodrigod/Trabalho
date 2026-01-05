@@ -19,7 +19,7 @@ def coordenadas_telefone():
 def telefone_valido(telefone):
     return telefone is not None and telefone.strip() != ""
 
-def automar_fuction(df):
+def automar_fuction(df):    
     
     df = pd.read_excel(df, dtype=str, sheet_name="HAP")
 
