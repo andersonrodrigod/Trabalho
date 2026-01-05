@@ -23,7 +23,7 @@ df["Contato"] = df["Contato"].astype(str).str.strip()
 df_resposta["nom_contato"] = df_resposta["nom_contato"].astype(str).str.strip()
 
 # cria nova coluna só com datas sem horas
-df["Data de envio"] = pd.to_datetime(df["Data do envio"], errors="coerce").dt.date
+df["Data de envio"] = pd.to_datetime(df["Data agendamento"], errors="coerce").dt.date
 
 print(df["Data de envio"].head())
 
@@ -45,8 +45,6 @@ df = df.merge(
 # ----------------------------
 # AJUSTE FINAL
 # ----------------------------
-
-df["Resposta"] = df["resposta"].fillna("Sem resposta")
 
 df["Resposta"] = df["resposta"].fillna("Sem resposta")
 
@@ -151,6 +149,9 @@ df["nome_manipulado"] = df["Contato"].astype(str).str.split("_").str[0]
 alteracoes_contato = (contato_antes != df["nome_manipulado"]).sum()
 
 print(f"   ✔ Coluna Contato tratada. Alterações feitas: {alteracoes_contato}\n")
+
+df[["Conta", "Mensagem", "Categoria", "Template", "Template", "Protocolo", "Status agendamento", "Agente"]] = pd.NA
+
 
 # ------------------------------------------------------------
 # 5) SALVAR O RESULTADO

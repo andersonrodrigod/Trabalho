@@ -2,6 +2,8 @@ import pandas as pd
 
 df = pd.read_excel("status.xlsx")
 
+# 1) CORREÇÃO DE TEXTOS E CARACTERES SUBSTITUÍDOS
+
 df["HSM"] = df["HSM"].replace({
     "Pesquisa Complicaτ⌡es Cirurgicas": "Complicações cirurgicas"
 })
@@ -19,8 +21,10 @@ df["Respondido"] = df["Respondido"].replace({
     "Nπo": "Não"
 })
 
-df = df[df["HSM"] != "Pesquisa_Pos_cir_urg_intern"]
-df = df[df["HSM"] != "Pesquisa_Pos_cir_eletivo"]
+df = df[df["HSM"] != ""] # colocar depois >>>>> complicações cirurgicas
+#df = df[df["HSM"] != "Pesquisa_Pos_cir_eletivo"]
+
+# 2) AJUSTE E MANIPULAÇÃO DE DADOS
 
 df.loc[df["Respondido"] == "Sim", "Status"] = "Lida"
 
@@ -30,4 +34,9 @@ df[["Conta", "Mensagem", "Categoria", "Template", "Template", "Protocolo", "Stat
 
 df.to_excel("status.xlsx", index=False)
 
-print("\n🎉 Processo concluído com sucesso!")
+
+
+
+
+
+
