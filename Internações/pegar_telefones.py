@@ -44,19 +44,28 @@ def montar_df_final(df_base):
 
 df_usuarios = montar_df_final(filtro_sem_telefone)
 
+# Preservar a ordem original através do índice
+df_usuarios = df_usuarios.reset_index(drop=False).rename(columns={'index': 'ordem_original'})
+
 # Criar arquivo Excel com múltiplas abas
-with pd.ExcelWriter('SETEMBRO_SEM_TELEFONE.xlsx', engine='openpyxl') as writer:
+with pd.ExcelWriter('SETEMBRO_COM_TELEFONES.xlsx', engine='openpyxl') as writer:
     # Criar uma aba para cada BASE
     for aba in abas:
         # Filtrar dados da aba específica
-        df_aba = df_usuarios[df_usuarios['BASE'] == aba]
+        df_aba = df_usuarios[df_usuarios['BASE'] == aba].copy()
+        
+        # Remover a coluna de ordem antes de salvar
+        if 'ordem_original' in df_aba.columns:
+            df_aba = df_aba.drop(columns=['ordem_original'])
         
         # Escrever na aba correspondente
         if not df_aba.empty:
             df_aba.to_excel(writer, sheet_name=aba, index=False)
     
-    # Criar uma aba com todos os dados
-    df_usuarios.to_excel(writer, sheet_name='TODOS', index=False)
+    # Criar uma aba com todos os dados na ordem original
+    df_todos = df_usuarios.sort_values('ordem_original').copy()
+    df_todos = df_todos.drop(columns=['ordem_original'])
+    df_todos.to_excel(writer, sheet_name='TODOS', index=False)
 
 
 

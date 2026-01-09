@@ -68,8 +68,7 @@ df["Resposta"] = df["Resposta"].replace({
 # 2) EXCLUSÃO DE LINHAS ESPECÍFICAS NA COLUNA HSM
 # ------------------------------------------------------------
 
-df = df[df["HSM"] != "Pesquisa_Pos_cir_urg_intern"]
-df = df[df["HSM"] != "Pesquisa_Pos_cir_eletivo"]
+df = df[df["HSM"] != "Complicações cirurgicas"] # colocar depois >> Complicações cirurgicas
 
 # ------------------------------------------------------------
 # 3) SE RESPONDIDO == 'Sim', ENTÃO STATUS = 'Lida'

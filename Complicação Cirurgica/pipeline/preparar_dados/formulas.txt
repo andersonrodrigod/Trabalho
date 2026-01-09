@@ -1,0 +1,15 @@
+=SE(AQ1=1,"1 - Não encontrei dificuldades",
+SE(AQ1=2,"2 - Consulta médica",
+SE(AQ1=3,"3 - Avaliação cardíaca",
+SE(AQ1=4,"4 - Agendamento da cirurgia",
+SE(AQ1=5,"5 - Consulta pós-cirúrgica",
+SE(AQ1=6,"6 - Outros",""))))))
+
+
+=SE(AV1=1,"1 - Muito Insatisfeito",
+SE(AV1=2,"2 - Insatisfeito",
+SE(AV1=3,"3 - Médio",
+SE(AV1=4,"4 - Satisfeito",
+SE(AV1=5,"5 - Muito Satisfeito","")))))
+
+

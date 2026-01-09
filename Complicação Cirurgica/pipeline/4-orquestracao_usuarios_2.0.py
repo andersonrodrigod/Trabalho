@@ -43,8 +43,7 @@ df_usuarios["SOMA_STATUS"] = df_usuarios[colunas_status].sum(axis=1)
 mask_em_respondidos = ch_usuarios.isin(ch_respondidos)
 mask_em_lidos = ch_usuarios.isin(ch_lidos)
 mask_lida1 = df_usuarios["LIDA"] == 1
-mask_lida2 = df_usuarios["LIDA"] == 2
-
+ 
 
 incremento = df_usuarios["SOMA_STATUS"] // 5
 
@@ -75,9 +74,12 @@ for base, nome_aba in abas_base.items():
         df_abas[nome_aba] = pd.concat([df_abas[nome_aba], df_base], ignore_index=True)
 
 mask_em_respondidos = mask_em_respondidos 
-mask_para_segundo_envio = mask_lida1 & ~mask_em_respondidos & ~mask_acumalador
-mask_para_lidos_nao_respondidos = ~mask_em_respondidos & mask_em_lidos & ~mask_acumalador & (df_usuarios["LIDA"] > 1)
-mask_para_trocar_contato_lida2 = mask_lida2 & ~mask_em_respondidos & ~mask_acumalador
+
+mask_para_segundo_envio = mask_lida1 & ~mask_em_respondidos & ~mask_acumalador & (df_usuarios["IDENTIFICACAO"] == "Sim" ) & (df_usuarios["RESPOSTA"] == "Sim")
+
+mask_para_lidos_nao_respondidos = ~mask_em_respondidos & mask_em_lidos & ~mask_acumalador & (df_usuarios["IDENTIFICACAO"] != "Sim" ) & (df_usuarios["RESPOSTA"] != "Sim") & (df_usuarios["LIDA"] > 2)
+
+mask_para_trocar_contato_lida2 = mask_lida1 & ~mask_em_respondidos & ~mask_acumalador & ((df_usuarios["IDENTIFICACAO"] == "Sim" ) | (df_usuarios["RESPOSTA"] == "Não"))
  
 df_novos_resolvidos = df_usuarios[mask_em_respondidos].copy()
 df_lidos_nao_respondidos = df_usuarios[mask_para_lidos_nao_respondidos]
@@ -104,7 +106,7 @@ df_resolvidos = pd.concat(
 """
 df_usuarios = df_usuarios[~mask_remover].copy()
 
-df_usuarios_defeituosos = detectar_usuarios_defeituosos(df_usuarios, df_resolvidos)
+
 
 
 # ==========================================================
@@ -118,7 +120,7 @@ df_abas["usuarios"] = df_usuarios
 df_abas["usuarios_resolvidos"] = df_resolvidos
 df_abas["usuarios_lidos_nao_respondidos"] = df_lidos_nao_respondidos
 df_abas["segundo_envio_lidos"] = df_segundo_envio
-df_abas["usuarios_defeituosos"] = df_usuarios_defeituosos
+#df_abas["usuarios_defeituosos"] = df_usuarios_defeituosos
 df_abas["trocar_contato_lida"] = df_trocar_contato_lida2
 
 
@@ -192,11 +194,6 @@ for base, nome_aba in abas_base.items():
 
 
 #df_usuarios = df_usuarios[~mask_acumalador].copy()
-
-
-
-
-
 
 # prints de verificações
 """print(mask_para_segundo_envio.head(10))
