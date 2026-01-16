@@ -33,7 +33,7 @@ def automar_function(df):
 
     time.sleep(1)
 
-    for idx, row in df[mask_nao_processado].head(5).iterrows():
+    for idx, row in df[mask_nao_processado].iterrows():
         valor = str(row["SOLICITANTE"]).strip()
 
         copy_vazio()

@@ -2,12 +2,12 @@ import pandas as pd
 import numpy as np
 from controle_usuarios import ingestao_usuarios
 
-print("📘 Lendo NOVEMBRO GERAL.xlsx ...")
-df_base = pd.read_excel("NOVEMBRO GERAL.xlsx", sheet_name="BASE")
+print("📘 Lendo COMPLICAÇÃO DEZEMBRO 16.01.xlsx ...")
+df_base = pd.read_excel("COMPLICAÇÃO DEZEMBRO 16.01.xlsx", sheet_name="BASE")
 df_base.columns = df_base.columns.str.strip()
 
-print("📗 Lendo novos_contatos.xlsx ...")
-abas = pd.read_excel("novos_contatos.xlsx", sheet_name=None)
+print("📗 Lendo novos_contatos 15.01.xlsx ...")
+abas = pd.read_excel("novos_contatos 15.01.xlsx", sheet_name=None)
 
 #abas = ingestao_usuarios(df_base, abas)
 
@@ -67,12 +67,12 @@ df_lidos = montar_df_final(filtro_lidos)
 # -------------------------
 # usuarios_respondidos — P1 ou PN1 preenchido
 # -------------------------
-df_respondidos = montar_df_final(df_base[(df_base["P1"].notna()) | (df_base["PN1"].notna())])
+df_respondidos = montar_df_final(df_base[(df_base["P1"].notna())])
 
 # -------------------------
 # usuarios_nao_respondidos — P1 e PN1 vazios
 # -------------------------
-df_nao_respondidos = montar_df_final(df_base[(df_base["P1"].isna()) & (df_base["PN1"].isna())])
+df_nao_respondidos = montar_df_final(df_base[(df_base["P1"].isna())])
 
 # -------------------------
 # Atualizar SOMENTE AS ABAS necessárias
@@ -93,7 +93,7 @@ abas["usuarios_nao_respondidos"] = df_nao_respondidos
 # SALVAR ARQUIVO FINAL
 # -------------------------
 print("💾 Salvando novos_contatos_atualizados.xlsx ...")
-with pd.ExcelWriter("novos_contatos_atualizados.xlsx", engine="openpyxl") as writer:
+with pd.ExcelWriter("novos_contatos.xlsx", engine="openpyxl") as writer:
     for nome_aba, tabela in abas.items():
         tabela.to_excel(writer, sheet_name=nome_aba, index=False)
 

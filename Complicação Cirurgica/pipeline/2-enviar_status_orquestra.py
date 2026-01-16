@@ -141,10 +141,29 @@ for c in colunas_tel:
     if c in df_novos.columns:
         df_novos[c+"_NORM"] = df_novos[c].astype(str).str.replace(r"\D","",regex=True)
 
-df_novos["TELEFONE ENVIADO_NORM"] = df_novos["TELEFONE ENVIADO"].astype(str).str.replace(r"\D","",regex=True)
+df_novos["TELEFONE_NORM"] = (
+    df_novos["TELEFONE RELATORIO"]
+    .astype(str)
+    .str.replace(r"\D", "", regex=True)
+    .str.replace(r"(55\d{10,11})0+$", r"\1", regex=True)
+)
 
 def conf_tel(r):
-    return "OK" if r["TELEFONE ENVIADO_NORM"] in [r.get(c+"_NORM","") for c in colunas_tel] else "ERRO"
+    tel_env = r.get("TELEFONE ENVIADO_NORM", "")
+
+    telefones_base = [r.get(c+"_NORM", "") for c in colunas_tel]
+
+    status = "OK" if tel_env in telefones_base else "ERRO"
+
+    # print só quando der ERRO e existir telefone enviado
+    if status == "ERRO" and tel_env:
+        print("\n🔍 DEBUG TELEFONE")
+        print("CHAVE RELATORIO:", r.get("CHAVE RELATORIO"))
+        print("TELEFONE ENVIADO_NORM:", repr(tel_env))
+        print("TELEFONES BASE:", [repr(t) for t in telefones_base])
+
+    return status
+
 
 df_novos["STATUS TELEFONE"] = df_novos.apply(conf_tel, axis=1)
 
