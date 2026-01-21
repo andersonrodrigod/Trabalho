@@ -2,12 +2,12 @@ import pandas as pd
 import numpy as np
 from controle_usuarios import ingestao_usuarios
 
-print("📘 Lendo COMPLICAÇÃO DEZEMBRO 16.01.xlsx ...")
-df_base = pd.read_excel("COMPLICAÇÃO DEZEMBRO 16.01.xlsx", sheet_name="BASE")
+print("📘 Lendo COMPLICAÇÃO DEZEMBRO 19.01.xlsx ...")
+df_base = pd.read_excel("COMPLICAÇÃO DEZEMBRO 19.01.xlsx", sheet_name="BASE")
 df_base.columns = df_base.columns.str.strip()
 
-print("📗 Lendo novos_contatos 15.01.xlsx ...")
-abas = pd.read_excel("novos_contatos 15.01.xlsx", sheet_name=None)
+print("📗 Lendo novos_contatos 19.01.xlsx ...")
+abas = pd.read_excel("novos_contatos 19.01.xlsx", sheet_name=None)
 
 #abas = ingestao_usuarios(df_base, abas)
 
