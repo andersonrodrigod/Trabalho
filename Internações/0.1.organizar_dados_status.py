@@ -21,8 +21,7 @@ df["Respondido"] = df["Respondido"].replace({
     "Nπo": "Não"
 })
 
-df = df[df["HSM"] != ""] # colocar depois >>>>> complicações cirurgicas
-#df = df[df["HSM"] != "Pesquisa_Pos_cir_eletivo"]
+df = df[df["HSM"] != "Complicações cirurgicas"]
 
 # 2) AJUSTE E MANIPULAÇÃO DE DADOS
 
