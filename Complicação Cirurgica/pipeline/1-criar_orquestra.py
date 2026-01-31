@@ -7,7 +7,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 # 1) LEITURA DO ARQUIVO
 # ==========================================================
 print("📘 Lendo arquivo COMPLICAÇÃO DEZEMBRO 2025.xlsx aba BASE...")
-df = pd.read_excel("COMPLICAÇÃO DEZEMBRO 14.01.xlsx", sheet_name="BASE")
+df = pd.read_excel("COMPLICAÇÃO DEZEMBRO 19.01.xlsx", sheet_name="BASE")
 
 print("🧽 Normalizando colunas...")
 df.columns = df.columns.str.strip()
@@ -31,12 +31,12 @@ print(f"   ➜ Total sem duplicados: {len(df_sem_duplicados)}")
 # 3) COLUNAS FINAIS PADRÃO
 # ==========================================================
 colunas_finais = [
-    'STATUS BOT', 'BASE', 'COD USUARIO', 'USUARIO', 'TELEFONE RELATORIO',
+    'STATUS BOT', 'BASE', 'COD USUARIO', 'USUARIO',
     'TELEFONE 1', 'TELEFONE 2', 'TELEFONE 3', 'TELEFONE 4', 'TELEFONE 5',
     'PRESTADOR', 'PROCEDIMENTO', 'TP ATENDIMENTO', 'DT INTERNACAO', 'ENVIO',
     'ULTIMO STATUS DE ENVIO','IDENTIFICACAO', 'RESPOSTA', 'LIDA', 'ENTREGUE', 'ENVIADA',
     'NAO_ENTREGUE_META', 'MENSAGEM_NAO_ENTREGUE', 'EXPERIMENTO',
-    'OPT_OUT', 'TELEFONE ENVIADO', 'CHAVE RELATORIO', 'CHAVE STATUS',
+    'OPT_OUT', 'TELEFONE ENVIADO', 'TELEFONE PRIORIDADE','CHAVE RELATORIO', 'CHAVE STATUS',
     'STATUS TELEFONE', 'STATUS CHAVE', "PROCESSO", "QT TELEFONE"
 ]
 
@@ -76,7 +76,7 @@ def montar_df_final(df_base):
     if 'BASE' in df_base: df_final['BASE'] = df_base['BASE']
     if 'COD USUARIO' in df_base: df_final['COD USUARIO'] = df_base['COD USUARIO']
     if 'USUARIO' in df_base: df_final['USUARIO'] = df_base['USUARIO']
-    if 'TELEFONE' in df_base: df_final['TELEFONE RELATORIO'] = df_base['TELEFONE']
+    if 'TELEFONE' in df_base: df_final['TELEFONE 1'] = df_base['TELEFONE']
     if 'PRESTADOR' in df_base: df_final['PRESTADOR'] = df_base['PRESTADOR']
     if 'PROCEDIMENTO' in df_base: df_final['PROCEDIMENTO'] = df_base['PROCEDIMENTO']
     if 'TP ATENDIMENTO' in df_base: df_final['TP ATENDIMENTO'] = df_base['TP ATENDIMENTO']
