@@ -122,7 +122,7 @@ print("✔ VIA CHAVE:", mask_chave.sum())
 # FALLBACK (NOME + TELEFONE) — SÓ SE NÃO PEGOU VIA CHAVE
 # ============================================================
 
-df_novos["TELEFONE_RELATORIO_NORM"] = df_novos["TELEFONE 1"].apply(normalizar_tel)
+df_novos["TELEFONE ENVIADO_NORM"] = df_novos["TELEFONE 1"].apply(normalizar_tel)
 
 map_fallback = (
     df_estado_atual
@@ -132,12 +132,12 @@ map_fallback = (
 
 mask_fallback = (
     df_novos["ULTIMO STATUS DE ENVIO"].isna()
-    & df_novos.set_index(["NOME_NORM", "TELEFONE_RELATORIO_NORM"]).index.isin(map_fallback.index)
+    & df_novos.set_index(["NOME_NORM", "TELEFONE ENVIADO_NORM"]).index.isin(map_fallback.index)
 )
 
 idx_fb = (
     df_novos.loc[mask_fallback]
-    .set_index(["NOME_NORM", "TELEFONE_RELATORIO_NORM"])
+    .set_index(["NOME_NORM", "TELEFONE ENVIADO_NORM"])
     .index
 )
 
@@ -154,18 +154,46 @@ print("✔ FALLBACK:", mask_fallback.sum())
 # CONTAGEM DE STATUS
 # ============================================================
 
-df_status["STATUS_MAP"] = df_status["Status"].map(status_colunas)
+df_status["STATUS_MAP"] = (df_status["Status"].map(status_colunas).fillna("OUTROS"))
 
-contagem = (
+contagem_total = (
     df_status
     .groupby(["Contato", "STATUS_MAP"])
     .size()
     .unstack(fill_value=0)
 )
+    
+for col in status_colunas.values():
+    qt_col = f"QT {col}"
+
+    df_novos[qt_col] = (
+        df_novos["CHAVE STATUS"]
+        .map(contagem_total.get(col, 0))
+        .fillna(0)
+        .astype(int)
+    )
+
+contagem_tel_nome = (
+    df_status
+    .dropna(subset=["NOME_NORM", "TELEFONE_NORM"])
+    .groupby(["NOME_NORM", "TELEFONE_NORM", "STATUS_MAP"])
+    .size()
+    .unstack(fill_value=0)
+)
+
+idx_tel_nome = (
+    df_novos
+    .set_index(["NOME_NORM", "TELEFONE ENVIADO_NORM"])
+    .index
+)
 
 for col in status_colunas.values():
-    df_novos[col] = (df_novos["CHAVE STATUS"].map(contagem.get(col, 0)).fillna(0).astype(int)
-)
+    df_novos[col] = (
+        idx_tel_nome
+        .map(contagem_tel_nome.get(col, 0))
+        .fillna(0)
+        .astype(int)
+    )
 
 
 print("✔ Contagem aplicada")
@@ -217,8 +245,13 @@ df_export = df_novos.copy()
 df_export = df_export.loc[:, ~df_export.columns.str.endswith("_NORM")]
 df_export = df_export.drop(columns=["DATA_EVENTO"], errors="ignore")
 
+# colunas originais
 df_export[list(status_colunas.values())] = \
     df_export[list(status_colunas.values())].replace(0, np.nan)
+
+# colunas QT
+df_export[[f"QT {c}" for c in status_colunas.values()]] = \
+    df_export[[f"QT {c}" for c in status_colunas.values()]].replace(0, np.nan)
 
 abas["usuarios"] = df_export
 
