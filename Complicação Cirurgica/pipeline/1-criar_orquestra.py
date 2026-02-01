@@ -78,7 +78,11 @@ def montar_df_final(df_base):
     if 'BASE' in df_base: df_final['BASE'] = df_base['BASE']
     if 'COD USUARIO' in df_base: df_final['COD USUARIO'] = df_base['COD USUARIO']
     if 'USUARIO' in df_base: df_final['USUARIO'] = df_base['USUARIO']
-    if 'TELEFONE' in df_base: df_final['TELEFONE 1'] = df_base['TELEFONE']
+    if 'TELEFONE 1' in df_base: df_final['TELEFONE 1'] = df_base['TELEFONE 1']
+    if 'TELEFONE 2' in df_base: df_final['TELEFONE 2'] = df_base['TELEFONE 2']
+    if 'TELEFONE 3' in df_base: df_final['TELEFONE 3'] = df_base['TELEFONE 3']
+    if 'TELEFONE 4' in df_base: df_final['TELEFONE 4'] = df_base['TELEFONE 4']
+    if 'TELEFONE 5' in df_base: df_final['TELEFONE 5'] = df_base['TELEFONE 5']
     if 'PRESTADOR' in df_base: df_final['PRESTADOR'] = df_base['PRESTADOR']
     if 'PROCEDIMENTO' in df_base: df_final['PROCEDIMENTO'] = df_base['PROCEDIMENTO']
     if 'TP ATENDIMENTO' in df_base: df_final['TP ATENDIMENTO'] = df_base['TP ATENDIMENTO']
@@ -144,13 +148,7 @@ abas_vazias = {
     "usuarios_lidos_nao_respondidos": df_vazio,
     "segundo_envio_lidos": df_vazio,
     "usuarios_resolvidos": df_vazio,
-    "usuarios_defeituosos": df_vazio,
     "trocar_contato_lida": df_vazio,
-    "HAP": df_vazio,
-    "NDI SP": df_vazio,
-    "NDI MINAS": df_vazio,
-    "CLINIPAN": df_vazio,
-    "CCG": df_vazio
 }
 
 df_dados_envio_telefonico = pd.DataFrame(columns=colunas_envio_telefonico)
@@ -166,7 +164,6 @@ with pd.ExcelWriter("novos_contatos.xlsx", engine="openpyxl") as writer:
     df_respondidos_p1.to_excel(writer, sheet_name="usuarios_respondidos", index=False)
     df_nao_respondidos_p1.to_excel(writer, sheet_name="usuarios_nao_respondidos", index=False)
     df_duplicados.to_excel(writer, sheet_name="usuarios_duplicados", index=False)
-    df_dados_envio_telefonico.to_excel(writer, sheet_name="dados_envio_telefonico", index=False)
     
     for aba, tabela in abas_vazias.items():
         tabela.to_excel(writer, sheet_name=aba, index=False)
