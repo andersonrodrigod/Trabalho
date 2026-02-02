@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 import re
-from controle_usuarios import retornar_registros_para_usuarios
 import warnings
+from controle_usuarios import retornar_registros_para_usuarios
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
 # ============================================================
@@ -12,6 +12,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 print("📘 Lendo novos_contatos.xlsx ...")
 abas = pd.read_excel("novos_contatos.xlsx", sheet_name=None)
 abas = retornar_registros_para_usuarios(abas)
+
 
 if "usuarios" not in abas:
     raise ValueError("Aba 'usuarios' não encontrada")
@@ -110,8 +111,8 @@ df_novos.loc[mask_chave, "IDENTIFICACAO"] = \
 df_novos.loc[mask_chave, "DATA_EVENTO"] = \
     df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["DATA_EVENTO"])
 
-df_novos.loc[mask_chave, "RESPOSTA"] = \
-    df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["Resposta"])
+"""df_novos.loc[mask_chave, "RESPOSTA"] = \
+    df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["Resposta"])"""
 
 df_novos.loc[mask_chave, "CHAVE STATUS"] = \
     df_novos.loc[mask_chave, "CHAVE RELATORIO"]
@@ -146,7 +147,7 @@ df_novos.loc[mask_fallback, "TELEFONE ENVIADO"] = idx_fb.map(map_fallback["Telef
 df_novos.loc[mask_fallback, "IDENTIFICACAO"] = idx_fb.map(map_fallback["Respondido"])
 df_novos.loc[mask_fallback, "DATA_EVENTO"] = idx_fb.map(map_fallback["DATA_EVENTO"])
 df_novos.loc[mask_fallback, "CHAVE STATUS"] = idx_fb.map(map_fallback["Contato"])
-df_novos.loc[mask_fallback, "RESPOSTA"] = idx_fb.map(map_fallback["Resposta"])
+"""df_novos.loc[mask_fallback, "RESPOSTA"] = idx_fb.map(map_fallback["Resposta"])"""
 
 print("✔ FALLBACK:", mask_fallback.sum())
 

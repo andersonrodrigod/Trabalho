@@ -1,7 +1,6 @@
 import pandas as pd
 import re
 import numpy as np
-from controle_usuarios import detectar_usuarios_defeituosos
 
 # ==========================================================
 # 1) LER TODAS AS ABAS
@@ -16,7 +15,6 @@ df_segundo_envio = df_abas["segundo_envio_lidos"].copy()
 df_duplicados = df_abas["usuarios_duplicados"].copy()
 df_resolvidos = df_abas["usuarios_resolvidos"].copy()
 df_lidos_nao_respondidos = df_abas["usuarios_lidos_nao_respondidos"].copy()
-df_defeituosos = df_abas["usuarios_defeituosos"].copy()
 df_trocar_contato_lida2 = df_abas["trocar_contato_lida"].copy()
 
 # ================================================================================
@@ -28,18 +26,12 @@ colunas_status = [
     "EXPERIMENTO", "OPT_OUT"
 ]
 
-abas_base = {
-    "HAP": "HAP",
-    "CCG": "CCG",
-    "NDI SP": "NDI SP",
-    "NDI MINAS": "NDI MINAS",
-    "CLINIPAN": "CLINIPAN"
-}
-
 ch_usuarios = df_usuarios["CHAVE RELATORIO"].astype(str).str.strip()
 ch_respondidos = df_respondidos["CHAVE RELATORIO"].astype(str).str.strip()
 ch_lidos = df_lidos["CHAVE RELATORIO"].astype(str).str.strip()
+
 df_usuarios["SOMA_STATUS"] = df_usuarios[colunas_status].sum(axis=1)
+
 mask_em_respondidos = ch_usuarios.isin(ch_respondidos)
 mask_em_lidos = ch_usuarios.isin(ch_lidos)
 mask_lida1 = df_usuarios["LIDA"] == 1
@@ -52,27 +44,6 @@ mask_acumalador = incremento > 0
 df_usuarios.loc[mask_acumalador, "QT TELEFONE"] += incremento[mask_acumalador]
 df_usuarios.loc[mask_acumalador, colunas_status] = np.nan
 
-df_para_base = df_usuarios[mask_acumalador].copy()
-
-for base, nome_aba in abas_base.items():
-    
-    df_base = df_para_base[df_para_base["BASE"] == base]
-
-    if not df_base.empty:
-        print(f"📌 Movendo {len(df_base)} registros para a aba {nome_aba}...")
-
-        if nome_aba not in df_abas:
-            df_abas[nome_aba] = pd.DataFrame(columns=df_usuarios.columns)
-        
-        # Registrar contagem antes de mover
-        print(f"📌 {len(df_base)} registros enviados para a aba: {nome_aba}")
-
-        # Mostrar as primeiras 5 chaves
-        print("   → CHAVES:")
-        print(df_base["CHAVE RELATORIO"].head().to_list())
-
-        df_abas[nome_aba] = pd.concat([df_abas[nome_aba], df_base], ignore_index=True)
-
 mask_em_respondidos = mask_em_respondidos 
 
 mask_para_segundo_envio = mask_lida1 & ~mask_em_respondidos & ~mask_acumalador & (df_usuarios["IDENTIFICACAO"] == "Sim" ) & (df_usuarios["RESPOSTA"] == "Sim")
@@ -82,7 +53,7 @@ mask_para_lidos_nao_respondidos = ~mask_em_respondidos & mask_em_lidos & ~mask_a
 mask_para_trocar_contato_lida2 = mask_lida1 & ~mask_em_respondidos & ~mask_acumalador & ((df_usuarios["IDENTIFICACAO"] == "Sim" ) | (df_usuarios["RESPOSTA"] == "Não"))
  
 df_novos_resolvidos = df_usuarios[mask_em_respondidos].copy()
-df_lidos_nao_respondidos = df_usuarios[mask_para_lidos_nao_respondidos]
+df_lidos_nao_respondidos = df_usuarios[mask_para_lidos_nao_respondidos].copy()
 df_segundo_envio = df_usuarios[mask_para_segundo_envio]
 df_trocar_contato_lida2 = df_usuarios[mask_para_trocar_contato_lida2]
 
@@ -99,15 +70,7 @@ df_resolvidos = pd.concat(
     ignore_index=True
 )
 
-"""df_resolvidos = df_resolvidos.drop_duplicates(
-    subset=["CHAVE RELATORIO"],
-    keep="first"
-)
-"""
 df_usuarios = df_usuarios[~mask_remover].copy()
-
-
-
 
 # ==========================================================
 # 4) ATUALIZAR DICIONÁRIO DE ABAS ANTES DE SALVAR
@@ -120,12 +83,8 @@ df_abas["usuarios"] = df_usuarios
 df_abas["usuarios_resolvidos"] = df_resolvidos
 df_abas["usuarios_lidos_nao_respondidos"] = df_lidos_nao_respondidos
 df_abas["segundo_envio_lidos"] = df_segundo_envio
-#df_abas["usuarios_defeituosos"] = df_usuarios_defeituosos
 df_abas["trocar_contato_lida"] = df_trocar_contato_lida2
 
-
-
-# (abas_base já foram atualizadas no loop anterior)
 
 
 print("\n📁 Salvando arquivo final...")
@@ -179,18 +138,6 @@ if len(df_segundo_envio) > 0:
     print("   → Primeiras CHAVES:")
     print(df_segundo_envio["CHAVE RELATORIO"].head().to_list())
 print("--------------------------------------------------------------")
-
-# 4) BASES (HAP, CCG, etc.)
-print("\n================ MOVIMENTAÇÃO PARA BASES ================\n")
-for base, nome_aba in abas_base.items():
-    if nome_aba in df_abas:
-        qtd = len(df_abas[nome_aba])
-        print(f"📌 {nome_aba}: {qtd} registros")
-        if qtd > 0:
-            print("   → Primeiras CHAVES:")
-            print(df_abas[nome_aba]["CHAVE RELATORIO"].head().to_list())
-    print("--------------------------------------------------------------")
-
 
 
 #df_usuarios = df_usuarios[~mask_acumalador].copy()

@@ -1,7 +1,6 @@
 import pandas as pd
 import re
 import numpy as np
-from controle_usuarios import detectar_usuarios_defeituosos
 
 # ==========================================================
 # 1) LER TODAS AS ABAS
@@ -54,7 +53,7 @@ mask_para_lidos_nao_respondidos = ~mask_em_respondidos & mask_em_lidos & ~mask_a
 mask_para_trocar_contato_lida2 = mask_lida1 & ~mask_em_respondidos & ~mask_acumalador & ((df_usuarios["IDENTIFICACAO"] == "Sim" ) | (df_usuarios["RESPOSTA"] == "Não"))
  
 df_novos_resolvidos = df_usuarios[mask_em_respondidos].copy()
-df_lidos_nao_respondidos = df_usuarios[mask_para_lidos_nao_respondidos]
+df_lidos_nao_respondidos = df_usuarios[mask_para_lidos_nao_respondidos].copy()
 df_segundo_envio = df_usuarios[mask_para_segundo_envio]
 df_trocar_contato_lida2 = df_usuarios[mask_para_trocar_contato_lida2]
 

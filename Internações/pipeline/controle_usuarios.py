@@ -157,6 +157,8 @@ def ingestao_usuarios(df_base, abas):
 
 
 
+
+
 def detectar_usuarios_defeituosos(df_usuarios, df_resolvidos):
     """
     Detecta usuários defeituosos:

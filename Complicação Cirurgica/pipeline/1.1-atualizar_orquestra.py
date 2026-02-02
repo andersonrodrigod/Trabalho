@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from controle_usuarios import ingestao_usuarios
+from controle_usuarios import retornar_registros_para_usuarios
+
 
 print("📘 Lendo COMPLICAÇÃO DEZEMBRO 19.01.xlsx ...")
 df_base = pd.read_excel("COMPLICAÇÃO DEZEMBRO 19.01.xlsx", sheet_name="BASE")
@@ -8,6 +9,7 @@ df_base.columns = df_base.columns.str.strip()
 
 print("📗 Lendo novos_contatos 19.01.xlsx ...")
 abas = pd.read_excel("novos_contatos 19.01.xlsx", sheet_name=None)
+abas = retornar_registros_para_usuarios(abas)
 
 #abas = ingestao_usuarios(df_base, abas)
 
@@ -17,12 +19,14 @@ abas = pd.read_excel("novos_contatos 19.01.xlsx", sheet_name=None)
 
 colunas_finais = [
     'STATUS BOT', 'BASE', 'COD USUARIO', 'USUARIO',
-    'TELEFONE RELATORIO', 'TELEFONE 1', 'TELEFONE 2', 'TELEFONE 3', 'TELEFONE 4', 'TELEFONE 5',
+    'TELEFONE 1', 'TELEFONE 2', 'TELEFONE 3', 'TELEFONE 4', 'TELEFONE 5',
     'PRESTADOR', 'PROCEDIMENTO', 'TP ATENDIMENTO', 'DT INTERNACAO', 'ENVIO',
-    'ULTIMO STATUS DE ENVIO', "IDENTIFICACAO", 'RESPOSTA', 'LIDA', 'ENTREGUE', 'ENVIADA',
-    'NAO_ENTREGUE_META', 'MENSAGEM_NAO_ENTREGUE', 'EXPERIMENTO', 'OPT_OUT',
-    'TELEFONE ENVIADO', 'CHAVE RELATORIO', 'CHAVE STATUS',
-    'STATUS TELEFONE', 'STATUS CHAVE', "PROCESSO",'QT TELEFONE',
+    'ULTIMO STATUS DE ENVIO','IDENTIFICACAO', 'RESPOSTA', 'LIDA', 'ENTREGUE', 'ENVIADA',
+    'NAO_ENTREGUE_META', 'MENSAGEM_NAO_ENTREGUE', 'EXPERIMENTO',
+    'OPT_OUT', 'TELEFONE ENVIADO', 'TELEFONE PRIORIDADE','CHAVE RELATORIO', 'CHAVE STATUS',
+    'STATUS TELEFONE', 'STATUS CHAVE', 'QT LIDA', 'QT ENTREGUE', 'QT ENVIADA',
+    'QT NAO_ENTREGUE_META', 'QT MENSAGEM_NAO_ENTREGUE', 'QT EXPERIMENTO',
+    'QT OPT_OUT',  "QT TELEFONE"
 ]
 
 # -------------------------
