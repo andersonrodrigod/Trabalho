@@ -167,12 +167,16 @@ contagem_total = (
 for col in status_colunas.values():
     qt_col = f"QT {col}"
 
-    df_novos[qt_col] = (
-        df_novos["CHAVE STATUS"]
-        .map(contagem_total.get(col, 0))
-        .fillna(0)
-        .astype(int)
-    )
+    if col in contagem_total.columns:
+        df_novos[qt_col] = (
+            df_novos["CHAVE STATUS"]
+            .map(contagem_total[col])
+            .fillna(0)
+            .astype(int)
+        )
+    else:
+        df_novos[qt_col] = 0
+
 
 contagem_tel_nome = (
     df_status
@@ -189,12 +193,16 @@ idx_tel_nome = (
 )
 
 for col in status_colunas.values():
-    df_novos[col] = (
-        idx_tel_nome
-        .map(contagem_tel_nome.get(col, 0))
-        .fillna(0)
-        .astype(int)
-    )
+    if col in contagem_tel_nome.columns:
+        df_novos[col] = (
+            idx_tel_nome
+            .map(contagem_tel_nome[col])
+            .fillna(0)
+            .astype(int)
+        )
+    else:
+        df_novos[col] = 0
+
 
 
 print("✔ Contagem aplicada")
