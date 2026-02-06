@@ -1,0 +1,8 @@
+na hora de tirar os duplicados 
+
+tirar os procedimentos relacionado a parto
+tirar os procedimentos duplicados por senha
+se houver laqueadura garantir cesariana como o principal. 
+se houver turbinectomia entre os procedimentos ele deve ser o principal. 
+se houver histerectomia entre os procedimentos ele deve ser o principal.
+se houver uretero entre os procedimentos ele deve ser o principal.

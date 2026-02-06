@@ -3,12 +3,12 @@ import numpy as np
 from controle_usuarios import retornar_registros_para_usuarios
 
 
-print("📘 Lendo COMPLICAÇÃO DEZEMBRO 19.01.xlsx ...")
-df_base = pd.read_excel("COMPLICAÇÃO DEZEMBRO 19.01.xlsx", sheet_name="BASE")
+print("📘 Lendo STATUS DISPARO COMPLICAÇÕES CIRURGICAS DEZEMBRO.xlsx ...")
+df_base = pd.read_excel("COMPLICAÇÃO DEZEMBRO 02.02.xlsx", sheet_name="BASE")
 df_base.columns = df_base.columns.str.strip()
 
-print("📗 Lendo novos_contatos 19.01.xlsx ...")
-abas = pd.read_excel("novos_contatos 19.01.xlsx", sheet_name=None)
+print("📗 Lendo STATUS DISPARO COMPLICAÇÕES CIRURGICAS DEZEMBRO.xlsx ...")
+abas = pd.read_excel("STATUS DISPARO COMPLICAÇÕES CIRURGICAS DEZEMBRO.xlsx", sheet_name=None)
 abas = retornar_registros_para_usuarios(abas)
 
 #abas = ingestao_usuarios(df_base, abas)
