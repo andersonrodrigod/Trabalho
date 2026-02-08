@@ -30,3 +30,49 @@ lista_administrativo = ['hospital', 'cirurgia', 'atendimento', 'demora', 'pacien
 36 casos que citam recepção mas não citam recepcionista
 
 
+ml_project/
+│
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   ├── predictions/
+│
+├── models/
+│   ├── coluna_1/
+│   │   ├── elogio.pkl
+│   │   ├── grupo.pkl
+│   │   └── motivo.pkl
+│   ├── coluna_2/
+│   └── ...
+│
+├── src/
+│   ├── preprocessing/
+│   │   └── text_preprocess.py
+│   │
+│   ├── training/
+│   │   └── train.py
+│   │
+│   ├── inference/
+│   │   └── predict.py
+│   │
+│   ├── pipelines/
+│   │   └── pipeline_coluna.py
+│   │
+│   └── utils.py
+│
+├── notebooks/
+│   ├── 01_exploracao.ipynb
+│   ├── 02_features.ipynb
+│   └── 03_modelagem.ipynb
+│
+├── app/
+│   └── app.py
+│
+├── config/
+│   └── config.yaml
+│
+├── tests/
+│   └── test_preprocessing.py
+│
+├── README.md
+└── requirements.txt
