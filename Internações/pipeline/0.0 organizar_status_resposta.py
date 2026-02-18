@@ -39,7 +39,7 @@ df = df.merge(
 # ----------------------------
 
 
-df["Resposta"] =  df["resposta"].fillna("Sem Resposta")
+df["Resposta"] = df["resposta"].fillna("Sem Resposta")
 
 df.drop(columns=["nom_contato", "dat_atendimento", "resposta"], inplace=True, errors="ignore")
 
@@ -68,7 +68,7 @@ df["Resposta"] = df["Resposta"].replace({
 # 2) EXCLUSÃO DE LINHAS ESPECÍFICAS NA COLUNA HSM
 # ------------------------------------------------------------
 
-df = df[df["HSM"] != "Complicações cirurgicas"] # colocar depois >> Complicações cirurgicas
+df = df[df["HSM"] != "Complicações cirurgicas"] 
 
 # ------------------------------------------------------------
 # 3) SE RESPONDIDO == 'Sim', ENTÃO STATUS = 'Lida'

@@ -11,7 +11,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 
 print("📘 Lendo novos_contatos.xlsx ...")
 abas = pd.read_excel("novos_contatos.xlsx", sheet_name=None)
-abas = retornar_registros_para_usuarios(abas)
+#abas = retornar_registros_para_usuarios(abas)
 
 
 if "usuarios" not in abas:
@@ -45,6 +45,9 @@ status_colunas = {
 df_status["Contato"] = df_status["Contato"].astype(str).str.strip()
 df_status["NOME_NORM"] = df_status["nome_manipulado"].astype(str).str.strip().str.upper()
 df_status["TELEFONE_NORM"] = df_status["Telefone"].astype(str).str.replace(r"\D", "", regex=True)
+
+if "Resposta" not in df_status.columns:
+    df_status["Resposta"] = pd.NA
 
 df_status["DATA_ENVIO"] = pd.to_datetime(
     df_status["Data de envio"],
@@ -80,6 +83,8 @@ df_estado_atual = (
 
 df_novos["CHAVE RELATORIO"] = df_novos["CHAVE RELATORIO"].astype(str).str.strip()
 df_novos["NOME_NORM"] = df_novos["USUARIO"].astype(str).str.strip().str.upper()
+if "LIDA_REPOSTA_SIM" not in df_novos.columns:
+    df_novos["LIDA_REPOSTA_SIM"] = 0
 
 # ============================================================
 # FUNÇÃO DE NORMALIZAÇÃO DE TELEFONE (ROBUSTA)
@@ -93,7 +98,7 @@ def normalizar_tel(v):
     return re.sub(r"\D", "", str(v))
 
 # ============================================================
-# VIA CHAVE (PRIORIDADE MÁXIMA)
+# VIA CHAVE (FLUXO ÚNICO)
 # ============================================================
 
 map_chave = df_estado_atual.set_index("Contato")
@@ -111,45 +116,14 @@ df_novos.loc[mask_chave, "IDENTIFICACAO"] = \
 df_novos.loc[mask_chave, "DATA_EVENTO"] = \
     df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["DATA_EVENTO"])
 
-df_novos.loc[mask_chave, "RESPOSTA"] = \
-    df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["Resposta"])
+if "Resposta" in map_chave.columns:
+    df_novos.loc[mask_chave, "RESPOSTA"] = \
+        df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["Resposta"])
 
 df_novos.loc[mask_chave, "CHAVE STATUS"] = \
     df_novos.loc[mask_chave, "CHAVE RELATORIO"]
 
 print("✔ VIA CHAVE:", mask_chave.sum())
-
-# ============================================================
-# FALLBACK (NOME + TELEFONE) — SÓ SE NÃO PEGOU VIA CHAVE
-# ============================================================
-
-df_novos["TELEFONE ENVIADO_NORM"] = df_novos["TELEFONE 1"].apply(normalizar_tel)
-
-map_fallback = (
-    df_estado_atual
-    .dropna(subset=["NOME_NORM", "TELEFONE_NORM"])
-    .set_index(["NOME_NORM", "TELEFONE_NORM"])
-)
-
-mask_fallback = (
-    df_novos["ULTIMO STATUS DE ENVIO"].isna()
-    & df_novos.set_index(["NOME_NORM", "TELEFONE ENVIADO_NORM"]).index.isin(map_fallback.index)
-)
-
-idx_fb = (
-    df_novos.loc[mask_fallback]
-    .set_index(["NOME_NORM", "TELEFONE ENVIADO_NORM"])
-    .index
-)
-
-df_novos.loc[mask_fallback, "ULTIMO STATUS DE ENVIO"] = idx_fb.map(map_fallback["Status"])
-df_novos.loc[mask_fallback, "TELEFONE ENVIADO"] = idx_fb.map(map_fallback["Telefone"])
-df_novos.loc[mask_fallback, "IDENTIFICACAO"] = idx_fb.map(map_fallback["Respondido"])
-df_novos.loc[mask_fallback, "DATA_EVENTO"] = idx_fb.map(map_fallback["DATA_EVENTO"])
-df_novos.loc[mask_fallback, "CHAVE STATUS"] = idx_fb.map(map_fallback["Contato"])
-df_novos.loc[mask_fallback, "RESPOSTA"] = idx_fb.map(map_fallback["Resposta"])
-
-print("✔ FALLBACK:", mask_fallback.sum())
 
 # ============================================================
 # CONTAGEM DE STATUS
@@ -177,6 +151,7 @@ for col in status_colunas.values():
     else:
         df_novos[qt_col] = 0
 
+df_novos["TELEFONE ENVIADO_NORM"] = df_novos["TELEFONE ENVIADO"].apply(normalizar_tel)
 
 contagem_tel_nome = (
     df_status
@@ -203,6 +178,26 @@ for col in status_colunas.values():
     else:
         df_novos[col] = 0
 
+# indicador especifico: LIDA com Resposta == Sim (nao entra na soma de status)
+mask_lida_resposta_sim = (
+    (df_status["STATUS_MAP"] == "LIDA")
+    & (df_status["Resposta"].astype(str).str.strip().str.casefold() == "Sim")
+)
+
+contagem_lida_resposta_sim = (
+    df_status[mask_lida_resposta_sim]
+    .dropna(subset=["NOME_NORM", "TELEFONE_NORM"])
+    .groupby(["NOME_NORM", "TELEFONE_NORM"])
+    .size()
+)
+
+df_novos["LIDA_REPOSTA_SIM"] = (
+    idx_tel_nome
+    .map(contagem_lida_resposta_sim)
+    .fillna(0)
+    .astype(int)
+)
+
 
 
 print("✔ Contagem aplicada")
@@ -212,8 +207,6 @@ print("✔ Contagem aplicada")
 # ============================================================
 
 colunas_tel = ["TELEFONE 1", "TELEFONE 2", "TELEFONE 3", "TELEFONE 4", "TELEFONE 5"]
-
-df_novos["TELEFONE ENVIADO_NORM"] = df_novos["TELEFONE ENVIADO"].apply(normalizar_tel)
 
 for c in colunas_tel:
     df_novos[c + "_NORM"] = df_novos[c].apply(normalizar_tel)
@@ -228,6 +221,17 @@ def identificar_prioridade(row):
     return "NAO_ENCONTRADO"
 
 df_novos["TELEFONE PRIORIDADE"] = df_novos.apply(identificar_prioridade, axis=1)
+
+# Marca em qual coluna de telefone ocorreu o envio.
+for i, c in enumerate(colunas_tel, start=1):
+    col_status = f"TELEFONE STATUS {i}"
+    if col_status not in df_novos.columns:
+        df_novos[col_status] = pd.NA
+    df_novos[col_status] = np.where(
+        df_novos["TELEFONE PRIORIDADE"] == c,
+        "ENVIADO",
+        pd.NA # type: ignore
+    )
 
 # ============================================================
 # STATUS DE CONSISTÊNCIA
@@ -261,6 +265,9 @@ df_export[list(status_colunas.values())] = \
 # colunas QT
 df_export[[f"QT {c}" for c in status_colunas.values()]] = \
     df_export[[f"QT {c}" for c in status_colunas.values()]].replace(0, np.nan)
+
+if "LIDA_REPOSTA_SIM" in df_export.columns:
+    df_export["LIDA_REPOSTA_SIM"] = df_export["LIDA_REPOSTA_SIM"].replace(0, np.nan)
 
 abas["usuarios"] = df_export
 

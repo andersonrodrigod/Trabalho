@@ -39,7 +39,7 @@ df = df.merge(
 # ----------------------------
 
 
-df["Resposta"] =  df["resposta"].fillna("Sem Resposta")
+df["Resposta"] = df["resposta"].fillna("Sem Resposta")
 
 df.drop(columns=["nom_contato", "dat_atendimento", "resposta"], inplace=True, errors="ignore")
 

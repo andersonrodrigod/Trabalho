@@ -6,8 +6,8 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 # ==========================================================
 # 1) LEITURA DO ARQUIVO
 # ==========================================================
-print("📘 Lendo arquivo MES JANEIRO 2026 COMPLICAÇÃO.xlsx aba BASE...")
-df = pd.read_excel("MES JANEIRO 2026 COMPLICAÇÃO.xlsx", sheet_name="BASE")
+print("📘 Lendo arquivo COMPLICAÇÃO DEZEMBRO 02.02.xlsx aba BASE...")
+df = pd.read_excel("COMPLICAÇÃO DEZEMBRO 02.02.xlsx", sheet_name="BASE")
 
 print("🧽 Normalizando colunas...")
 df.columns = df.columns.str.strip()
@@ -34,12 +34,12 @@ colunas_finais = [
     'STATUS BOT', 'BASE', 'COD USUARIO', 'USUARIO',
     'TELEFONE 1', 'TELEFONE 2', 'TELEFONE 3', 'TELEFONE 4', 'TELEFONE 5',
     'PRESTADOR', 'PROCEDIMENTO', 'TP ATENDIMENTO', 'DT INTERNACAO', 'ENVIO',
-    'ULTIMO STATUS DE ENVIO','IDENTIFICACAO', 'RESPOSTA', 'LIDA', 'ENTREGUE', 'ENVIADA',
+    'ULTIMO STATUS DE ENVIO','IDENTIFICACAO', 'RESPOSTA', 'LIDA_REPOSTA_SIM', 'LIDA', 'ENTREGUE', 'ENVIADA',
     'NAO_ENTREGUE_META', 'MENSAGEM_NAO_ENTREGUE', 'EXPERIMENTO',
     'OPT_OUT', 'TELEFONE ENVIADO', 'TELEFONE PRIORIDADE','CHAVE RELATORIO', 'CHAVE STATUS',
-    'STATUS TELEFONE', 'STATUS CHAVE', 'QT LIDA', 'QT ENTREGUE', 'QT ENVIADA',
+    'STATUS TELEFONE', 'STATUS CHAVE','PROCESSO', 'ACAO','QT LIDA', 'QT ENTREGUE', 'QT ENVIADA',
     'QT NAO_ENTREGUE_META', 'QT MENSAGEM_NAO_ENTREGUE', 'QT EXPERIMENTO',
-    'QT OPT_OUT',  "QT TELEFONE"
+    'QT OPT_OUT',  "QT TELEFONE", 'TELEFONE STATUS 1', 'TELEFONE STATUS 2', 'TELEFONE STATUS 3', 'TELEFONE STATUS 4', 'TELEFONE STATUS 5'
 ]
 
 # ==========================================================
@@ -145,10 +145,7 @@ df_duplicados = montar_df_final(df_duplicados_raw)
 df_vazio = pd.DataFrame(columns=colunas_finais)
 
 abas_vazias = {
-    "usuarios_lidos_nao_respondidos": df_vazio,
-    "segundo_envio_lidos": df_vazio,
     "usuarios_resolvidos": df_vazio,
-    "trocar_contato_lida": df_vazio,
 }
 
 df_dados_envio_telefonico = pd.DataFrame(columns=colunas_envio_telefonico)

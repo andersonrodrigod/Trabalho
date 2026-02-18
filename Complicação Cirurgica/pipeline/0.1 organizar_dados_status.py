@@ -2,6 +2,12 @@ import pandas as pd
 
 df = pd.read_excel("status.xlsx")
 
+# Garante a coluna de resposta para fluxos que nao passam pelo processo 0.0.
+if "Resposta" not in df.columns:
+    df["Resposta"] = pd.NA
+if "RESPOSTA" not in df.columns:
+    df["RESPOSTA"] = df["Resposta"]
+
 df["HSM"] = df["HSM"].replace({
     "Pesquisa Complicaτ⌡es Cirurgicas": "Complicações cirurgicas"
 })

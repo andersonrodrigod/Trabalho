@@ -2,7 +2,11 @@ import pandas as pd
 
 df = pd.read_excel("status.xlsx")
 
-# 1) CORREÇÃO DE TEXTOS E CARACTERES SUBSTITUÍDOS
+# Garante a coluna de resposta para fluxos que nao passam pelo processo 0.0.
+if "Resposta" not in df.columns:
+    df["Resposta"] = pd.NA
+if "RESPOSTA" not in df.columns:
+    df["RESPOSTA"] = df["Resposta"]
 
 df["HSM"] = df["HSM"].replace({
     "Pesquisa Complicaτ⌡es Cirurgicas": "Complicações cirurgicas"
@@ -23,8 +27,6 @@ df["Respondido"] = df["Respondido"].replace({
 
 df = df[df["HSM"] != "Complicações cirurgicas"]
 
-# 2) AJUSTE E MANIPULAÇÃO DE DADOS
-
 df.loc[df["Respondido"] == "Sim", "Status"] = "Lida"
 
 df["nome_manipulado"] = df["Contato"].astype(str).str.split("_").str[0]
@@ -33,9 +35,4 @@ df[["Conta", "Mensagem", "Categoria", "Template", "Template", "Protocolo", "Stat
 
 df.to_excel("status.xlsx", index=False)
 
-
-
-
-
-
-
+print("\n🎉 Processo concluído com sucesso!")
