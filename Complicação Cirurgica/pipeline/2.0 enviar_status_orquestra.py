@@ -222,16 +222,27 @@ def identificar_prioridade(row):
 
 df_novos["TELEFONE PRIORIDADE"] = df_novos.apply(identificar_prioridade, axis=1)
 
-# Marca em qual coluna de telefone ocorreu o envio.
+# Mapa com TODOS os telefones encontrados no status por contato/chave.
+telefones_por_contato = (
+    df_status
+    .groupby("Contato")["TELEFONE_NORM"]
+    .agg(lambda s: {t for t in s if t})
+    .to_dict()
+)
+
+def telefone_foi_enviado(chave_status, telefone_norm):
+    if not telefone_norm:
+        return False
+    telefones_contato = telefones_por_contato.get(chave_status, set())
+    return telefone_norm in telefones_contato
+
+# Marca em todas as colunas de telefone onde houve envio.
 for i, c in enumerate(colunas_tel, start=1):
     col_status = f"TELEFONE STATUS {i}"
-    if col_status not in df_novos.columns:
-        df_novos[col_status] = pd.NA
-    df_novos[col_status] = np.where(
-        df_novos["TELEFONE PRIORIDADE"] == c,
-        "ENVIADO",
-        pd.NA # type: ignore
-    )
+    df_novos[col_status] = [
+        "ENVIADO" if telefone_foi_enviado(chave, tel) else pd.NA
+        for chave, tel in zip(df_novos["CHAVE STATUS"], df_novos[c + "_NORM"])
+    ]
 
 # ============================================================
 # STATUS DE CONSISTÊNCIA

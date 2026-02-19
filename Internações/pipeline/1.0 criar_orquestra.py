@@ -6,8 +6,8 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 # ==========================================================
 # 1) LEITURA DO ARQUIVO
 # ==========================================================
-print("📘 Lendo arquivo COMPLICAÇÃO DEZEMBRO 02.02.xlsx aba BASE...")
-df = pd.read_excel("COMPLICAÇÃO DEZEMBRO 02.02.xlsx", sheet_name="BASE")
+print("📘 Lendo arquivo BASE DEZEMBRO INTERNACAO MAIN.xlsx aba BASE...")
+df = pd.read_excel("BASE DEZEMBRO INTERNACAO MAIN.xlsx", sheet_name="BASE")
 
 print("🧽 Normalizando colunas...")
 df.columns = df.columns.str.strip()
