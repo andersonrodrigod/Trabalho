@@ -5,12 +5,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
+from sklearn.svm import LinearSVC
+from sklearn.metrics import confusion_matrix
+
 
 import joblib
 
 DATASET_PATH = "data/processed/comentarios_processados_full.csv"
-MODEL_DIR = Path("models/elogio_queixa")
-MODEL_PATH = MODEL_DIR / "elogio_queixa.pkl"  
+MODEL_DIR = Path("models/grupo")
+MODEL_PATH = MODEL_DIR / "grupo.pkl"
 
 RANDOM_STATE = 42
 MIN_TEXTO_LEN = 5
@@ -22,43 +25,40 @@ def load_data(path):
 def prepare_dataset(df):
     df = df.copy()
 
-    # só linhas com rótulo e comentário
-    df = df.dropna(subset=["elogio_ou_queixa", "comentario"])
-
-    # garantir texto válido
-    df["comentario"] = df["comentario"].astype(str).str.strip()
+    # só linhas com rótulo e comentário e fase que seja de valor p1
+    df = df.dropna(subset=["grupo", "comentario", "fase"])
     df = df[df["comentario"].str.len() >= MIN_TEXTO_LEN]
+    df = df[df["fase"] == "p1"]
 
     # normalizar rótulo
-    df["elogio_ou_queixa"] = (
-        df["elogio_ou_queixa"]
+    df["grupo"] = (
+        df["grupo"]
         .str.upper()
         .str.replace(" ", "_")
     )
-
-    # O valor ELOGIO_QUEIXA na coluna "elogio_queixa" é ambigui, então deve se tornar "QUEIXA"
-    df["elogio_ou_queixa"] = df["elogio_ou_queixa"].replace("ELOGIO_QUEIXA", "QUEIXA")
+    # O valor 'm' e deve ser exlcuido todos, e o valor Hotelaria/Nutrição deve ser normalizado para 'HOTELARIA_NUTRICAO'
+    df = df[df["grupo"] != "M"]
+    df["grupo"] = df["grupo"].replace("HOTELARIA/NUTRIÇÃO", "HOTELARIA_NUTRICAO")
 
     return df
 
 def split_features_labels(df):
     X = df["comentario"]
-    y = df["elogio_ou_queixa"]
+    y = df["grupo"]
     return X, y
 
 def train_model(X, y):
-
     X_train, X_test, y_train, y_test = train_test_split(
         X, y,
         test_size=0.2,
         random_state=RANDOM_STATE,
-        stratify=y
     )
 
     vectorizer = TfidfVectorizer(
-        max_features=15000,
+        max_features=5000,
         ngram_range=(1, 2),
-        sublinear_tf=True
+        sublinear_tf=True,
+        min_df=2
     )
 
     X_train_vec = vectorizer.fit_transform(X_train)
@@ -66,19 +66,20 @@ def train_model(X, y):
 
     model = LogisticRegression(
         max_iter=1000,
-        class_weight={
-            "ELOGIO": 3,
-            "QUEIXA": 1
-        },
-        C=2
+        class_weight="balanced",
     )
     model.fit(X_train_vec, y_train)
 
     y_pred = model.predict(X_test_vec)
+    print("\n=== Classification Report ===")
     print(classification_report(y_test, y_pred))
 
-    return model, vectorizer
+    print("\n=== Confusion Matrix ===")
+    cm = confusion_matrix(y_test, y_pred, labels=model.classes_)
+    cm_df = pd.DataFrame(cm, index=model.classes_, columns=model.classes_)
+    print(cm_df)
 
+    return model, vectorizer
 
 def save_model(model, vectorizer, path):
 
