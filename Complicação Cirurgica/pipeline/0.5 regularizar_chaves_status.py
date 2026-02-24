@@ -108,7 +108,7 @@ idx_nao_dup_par = (
     .set_index(["NOME_NORM", "TELEFONE_NORM"])
     .index
 )
-novas_chaves = pd.Series(idx_nao_dup_par.map(map_unico), index=idx_nao_dup)
+novas_chaves = pd.Series(idx_nao_dup_par.map(map_unico), index=idx_nao_dup) # type: ignore
 
 mask_encontrado = novas_chaves.notna()
 idx_corrigir = mask_encontrado[mask_encontrado].index

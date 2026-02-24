@@ -1,8 +1,8 @@
 import pandas as pd
 
 # 1. Ler os arquivos
-df_excel = pd.read_excel("MES JANEIRO 2026 DIAS 1 A 25.xlsx")
-df_csv = pd.read_csv("tipo_7_detalhado.csv")
+df_excel = pd.read_excel("JANEIRO INTERNAÇÕES MAIN.xlsx")
+df_csv = pd.read_csv("telefone_janeiro_internacoes.csv")
 
 # 2. Converter as colunas para string
 df_excel["COD USUARIO"] = df_excel["COD USUARIO"].astype(str)
