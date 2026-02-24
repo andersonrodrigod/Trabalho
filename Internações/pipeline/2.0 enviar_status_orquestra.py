@@ -171,7 +171,7 @@ for col in status_colunas.values():
     if col in contagem_tel_nome.columns:
         df_novos[col] = (
             idx_tel_nome
-            .map(contagem_tel_nome[col])
+            .map(contagem_tel_nome[col]) # type: ignore
             .fillna(0)
             .astype(int)
         )
@@ -193,7 +193,7 @@ contagem_lida_resposta_sim = (
 
 df_novos["LIDA_REPOSTA_SIM"] = (
     idx_tel_nome
-    .map(contagem_lida_resposta_sim)
+    .map(contagem_lida_resposta_sim) # type: ignore
     .fillna(0)
     .astype(int)
 )
