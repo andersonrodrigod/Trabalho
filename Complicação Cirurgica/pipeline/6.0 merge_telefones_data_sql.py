@@ -3,8 +3,8 @@ import pandas as pd
 # =========================================================
 # 1. Ler os arquivos
 # =========================================================
-df_main = pd.read_excel("BASE DEZEMBRO INTERNACAO MAIN.xlsx")
-df_senhas = pd.read_csv("telefone_senha_dezembro.csv")
+df_main = pd.read_excel("JANEIRO INTERNAÇÕES MAIN.xlsx")
+df_senhas = pd.read_csv("telefone_janeiro_internacoes.csv")
 
 # =========================================================
 # 2. Limpar e padronizar chave SENHA
@@ -38,6 +38,24 @@ for col in telefones:
     )
 
 # =========================================================
+# 5.1 Regra adicional para telefones com nono dígito
+# =========================================================
+def ajustar_nono_digito(telefone: str) -> str:
+    if telefone == "":
+        return telefone
+
+    if len(telefone) > 4 and telefone[4] == "9":
+        if len(telefone) == 12:
+            return telefone[:4] + "9" + telefone[4:]
+        if len(telefone) == 13:
+            return telefone
+
+    return telefone
+
+for col in telefones:
+    df_senhas[col] = df_senhas[col].apply(ajustar_nono_digito)
+
+# =========================================================
 # 6. Merge mantendo todas as linhas da base principal
 # =========================================================
 df_final = df_main.merge(
@@ -64,7 +82,7 @@ df_final[telefones] = (
 # =========================================================
 # 9. Flags e contagens
 # =========================================================
-df_final["ENCONTROU"] = df_final[telefones].ne("").any(axis=1)
+df_final["ENCONTROU"] = df_final[telefones].ne("").any(axis=1) # type: ignore
 print("Total de SENHAS encontradas (com telefone):", df_final["ENCONTROU"].sum())
 
 df_final["MATCH_SENHA"] = df_final["SENHA"].isin(df_senhas["CD_SENHA"])
@@ -72,7 +90,7 @@ print("Match por SENHA:", df_final["MATCH_SENHA"].sum())
 
 sem_telefone = df_final[
     (df_final["MATCH_SENHA"] == True) &
-    (df_final[telefones].eq("").all(axis=1))
+    (df_final[telefones].eq("").all(axis=1)) # type: ignore
 ]
 print("Senha encontrada, mas sem telefone:", len(sem_telefone))
 
@@ -80,6 +98,6 @@ print("Senha encontrada, mas sem telefone:", len(sem_telefone))
 # 10. Salvar arquivo final
 # =========================================================
 df_final.to_excel(
-    "BASE_DEZEMBRO_COM_TELEFONES.xlsx",
+    "JANEIRO_INTERNAÇÕES_COM_TELEFONES.xlsx",
     index=False
 )
