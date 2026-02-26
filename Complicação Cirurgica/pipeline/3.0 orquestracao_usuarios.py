@@ -98,21 +98,27 @@ def definir_acao(row):
 
     processos_reenvio = {
         "SEGUNDO_ENVIO_LIDOS",
+        "ENVIAR_DISPARO_NOVAMENTE",
+    }
+    processos_troca_contato = {
         "MUDAR_CONTATO_LIDOS_NAO_IDENTIFICADOS",
         "MUDAR_CONTATO_LIDOS_REPOSTA_NAO",
         "MUDAR_CONTATO_LIDOS_SEM_RESPOSTA",
-        "ENVIAR_DISPARO_NOVAMENTE",
+        "MUDAR_CONTATO_ENVIO",
     }
 
     # Processos de reenvio: manter o mesmo slot (coluna) do telefone enviado.
     if processo in processos_reenvio:
         coluna_enviado = identificar_coluna_telefone_enviado(row)
         if not coluna_enviado:
-            return pd.NA
+            return "SEM_TELEFONE_DISPONIVEL"
         return f"ENVIAR_{coluna_enviado.replace(' ', '_')}"
 
-    # Troca de contato: busca o menor indice disponivel (status vazio).
-    if  processo == "MUDAR_CONTATO_LIDOS_SEM_RESPOSTA" or processo == "MUDAR_CONTATO_LIDOS_REPOSTA_NAO" or processo == "MUDAR_CONTATO_LIDOS_NAO_IDENTIFICADOS" or  processo == "MUDAR_CONTATO_ENVIO":
+    # Troca de contato: manter slot enviado quando possivel; senao, usar primeiro telefone disponivel.
+    if processo in processos_troca_contato:
+        coluna_enviado = identificar_coluna_telefone_enviado(row)
+        if coluna_enviado:
+            return f"ENVIAR_{coluna_enviado.replace(' ', '_')}"
         for i in range(1, 6):
             status_i = row.get(f"TELEFONE STATUS {i}", pd.NA)
             tel_i = normalizar_telefone(row.get(f"TELEFONE {i}", pd.NA))
@@ -153,6 +159,13 @@ mask_lida_resposta_sim = (
     & (df_usuarios["LIDA_REPOSTA_SIM"] >= 2)                  
 )
 
+mask_lida_resposta_sim_sem_resposta = (
+    ~mask_em_respondidos
+    & mask_em_lidos
+    & (df_usuarios["LIDA_REPOSTA_SIM"] >= 1)
+    & (df_usuarios["LIDA_SEM_RESPOSTA"] >= 1)                  
+)
+
 mask_lida_sem_resposta = (
     ~mask_em_respondidos
     & mask_em_lidos
@@ -180,6 +193,7 @@ df_usuarios.loc[mask_para_lidos_nao_respondidos, "PROCESSO"] = "MUDAR_CONTATO_LI
 df_usuarios.loc[mask_lida_resposta_sim, "PROCESSO"] = "ENCERRAR_CONTATO_LIDOS_RESPOSTA_SIM"
 df_usuarios.loc[mask_lida_sem_resposta, "PROCESSO"] = "MUDAR_CONTATO_LIDOS_SEM_RESPOSTA"
 df_usuarios.loc[mask_lida_resposta_nao, "PROCESSO"] = "MUDAR_CONTATO_LIDOS_REPOSTA_NAO"
+df_usuarios.loc[mask_lida_resposta_sim_sem_resposta, "PROCESSO"] = "ENCERRAR_CONTATO_LIDOS_RESPOSTA_SIM"
 
 mask_para_reenviar_disparo_novamente = (
     df_usuarios["PROCESSO"].isna()
@@ -300,6 +314,17 @@ if qtd_lidos_sem_resposta > 0:
     print(
         df_usuarios.loc[
             df_usuarios["PROCESSO"] == "LIDOS_SEM_RESPOSTA",
+            "CHAVE RELATORIO",
+        ].head().to_list()
+    )
+
+qtd_lida_resposta_sim_sem_resposta = int(mask_lida_resposta_sim_sem_resposta.sum())
+print(f"LIDOS RESPOSTA SIM SEM RESPOSTA (PROCESSO): {qtd_lida_resposta_sim_sem_resposta} registros")
+if qtd_lida_resposta_sim_sem_resposta > 0:
+    print("   -> Primeiras CHAVES:")
+    print(
+        df_usuarios.loc[
+            df_usuarios["PROCESSO"] == "ENCERRAR_CONTATO_LIDOS_RESPOSTA_SIM",
             "CHAVE RELATORIO",
         ].head().to_list()
     )

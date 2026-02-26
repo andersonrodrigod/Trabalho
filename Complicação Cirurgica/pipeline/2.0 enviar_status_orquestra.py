@@ -12,6 +12,11 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 
 print("📘 Lendo novos_contatos.xlsx ...")
 abas = pd.read_excel("novos_contatos.xlsx", sheet_name=None)
+# Leitura tipada para preservar telefones como texto e evitar notacao cientifica.
+colunas_usuarios = pd.read_excel("novos_contatos.xlsx", sheet_name="usuarios", nrows=0).columns
+colunas_telefone = [f"TELEFONE {i}" for i in range(1, 6)] + ["TELEFONE ENVIADO"]
+dtype_usuarios = {c: str for c in colunas_telefone if c in colunas_usuarios}
+abas["usuarios"] = pd.read_excel("novos_contatos.xlsx", sheet_name="usuarios", dtype=dtype_usuarios)
 #abas = retornar_registros_para_usuarios(abas)
 
 
