@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
+import unicodedata
 import warnings
 from controle_usuarios import retornar_registros_para_usuarios
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -46,8 +47,20 @@ df_status["Contato"] = df_status["Contato"].astype(str).str.strip()
 df_status["NOME_NORM"] = df_status["nome_manipulado"].astype(str).str.strip().str.upper()
 df_status["TELEFONE_NORM"] = df_status["Telefone"].astype(str).str.replace(r"\D", "", regex=True)
 
+def normalizar_texto(v):
+    if pd.isna(v):
+        return ""
+    txt = str(v).strip().casefold()
+    txt = unicodedata.normalize("NFKD", txt)
+    return "".join(ch for ch in txt if not unicodedata.combining(ch))
+
 if "Resposta" not in df_status.columns:
     df_status["Resposta"] = pd.NA
+
+df_status["RESPOSTA_NORM"] = (
+    df_status["Resposta"]
+    .apply(normalizar_texto)
+)
 
 df_status["DATA_ENVIO"] = pd.to_datetime(
     df_status["Data de envio"],
@@ -119,7 +132,7 @@ df_novos.loc[mask_chave, "DATA_EVENTO"] = \
 if "Resposta" in map_chave.columns:
     df_novos.loc[mask_chave, "RESPOSTA"] = \
         df_novos.loc[mask_chave, "CHAVE RELATORIO"].map(map_chave["Resposta"])
-
+    
 df_novos.loc[mask_chave, "CHAVE STATUS"] = \
     df_novos.loc[mask_chave, "CHAVE RELATORIO"]
 
@@ -181,11 +194,35 @@ for col in status_colunas.values():
 # indicador especifico: LIDA com Resposta == Sim (nao entra na soma de status)
 mask_lida_resposta_sim = (
     (df_status["STATUS_MAP"] == "LIDA")
-    & (df_status["Resposta"].astype(str).str.strip().str.casefold() == "Sim")
+    & (df_status["RESPOSTA_NORM"] == "sim")
+)
+
+mask_lida_resposta_nao= (
+    (df_status["STATUS_MAP"] == "LIDA")
+    & (df_status["RESPOSTA_NORM"] == "nao")
+)
+
+mask_lida_sem_resposta = (
+    (df_status["STATUS_MAP"] == "LIDA")
+    & (df_status["RESPOSTA_NORM"] == "sem resposta")
 )
 
 contagem_lida_resposta_sim = (
     df_status[mask_lida_resposta_sim]
+    .dropna(subset=["NOME_NORM", "TELEFONE_NORM"])
+    .groupby(["NOME_NORM", "TELEFONE_NORM"])
+    .size()
+)
+
+contagem_lida_resposta_nao = (
+    df_status[mask_lida_resposta_nao]
+    .dropna(subset=["NOME_NORM", "TELEFONE_NORM"])
+    .groupby(["NOME_NORM", "TELEFONE_NORM"])
+    .size()
+)
+
+contagem_lida_sem_resposta = (
+    df_status[mask_lida_sem_resposta]
     .dropna(subset=["NOME_NORM", "TELEFONE_NORM"])
     .groupby(["NOME_NORM", "TELEFONE_NORM"])
     .size()
@@ -198,7 +235,19 @@ df_novos["LIDA_REPOSTA_SIM"] = (
     .astype(int)
 )
 
+df_novos["LIDA_REPOSTA_NAO"] = (
+    idx_tel_nome
+    .map(contagem_lida_resposta_nao) # type: ignore
+    .fillna(0)
+    .astype(int)
+)
 
+df_novos["LIDA_SEM_RESPOSTA"] = (
+    idx_tel_nome
+    .map(contagem_lida_sem_resposta) # type: ignore
+    .fillna(0)
+    .astype(int)
+)
 
 print("✔ Contagem aplicada")
 
@@ -279,6 +328,12 @@ df_export[[f"QT {c}" for c in status_colunas.values()]] = \
 
 if "LIDA_REPOSTA_SIM" in df_export.columns:
     df_export["LIDA_REPOSTA_SIM"] = df_export["LIDA_REPOSTA_SIM"].replace(0, np.nan)
+
+if "LIDA_REPOSTA_NAO" in df_export.columns:
+    df_export["LIDA_REPOSTA_NAO"] = df_export["LIDA_REPOSTA_NAO"].replace(0, np.nan)
+
+if "LIDA_SEM_RESPOSTA" in df_export.columns:
+    df_export["LIDA_SEM_RESPOSTA"] = df_export["LIDA_SEM_RESPOSTA"].replace(0, np.nan)
 
 abas["usuarios"] = df_export
 

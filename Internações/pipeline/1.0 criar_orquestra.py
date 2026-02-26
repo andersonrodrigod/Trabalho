@@ -6,8 +6,8 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 # ==========================================================
 # 1) LEITURA DO ARQUIVO
 # ==========================================================
-print("📘 Lendo arquivo BASE DEZEMBRO INTERNACAO MAIN.xlsx aba BASE...")
-df = pd.read_excel("BASE DEZEMBRO INTERNACAO MAIN.xlsx", sheet_name="BASE")
+print("📘 Lendo arquivo BASE JANEIRO INTERNAÇÕES MAIN.xlsx aba BASE...")
+df = pd.read_excel("BASE JANEIRO INTERNAÇÕES MAIN.xlsx", sheet_name="BASE")
 
 print("🧽 Normalizando colunas...")
 df.columns = df.columns.str.strip()
@@ -34,7 +34,7 @@ colunas_finais = [
     'STATUS BOT', 'BASE', 'COD USUARIO', 'USUARIO',
     'TELEFONE 1', 'TELEFONE 2', 'TELEFONE 3', 'TELEFONE 4', 'TELEFONE 5',
     'PRESTADOR', 'PROCEDIMENTO', 'TP ATENDIMENTO', 'DT INTERNACAO', 'ENVIO',
-    'ULTIMO STATUS DE ENVIO','IDENTIFICACAO', 'RESPOSTA', 'LIDA_REPOSTA_SIM', 'LIDA', 'ENTREGUE', 'ENVIADA',
+    'ULTIMO STATUS DE ENVIO','IDENTIFICACAO', 'RESPOSTA', 'LIDA_REPOSTA_SIM','LIDA_REPOSTA_NAO', 'LIDA_SEM_RESPOSTA', 'LIDA', 'ENTREGUE', 'ENVIADA',
     'NAO_ENTREGUE_META', 'MENSAGEM_NAO_ENTREGUE', 'EXPERIMENTO',
     'OPT_OUT', 'TELEFONE ENVIADO', 'TELEFONE PRIORIDADE','CHAVE RELATORIO', 'CHAVE STATUS',
     'STATUS TELEFONE', 'STATUS CHAVE','PROCESSO', 'ACAO','QT LIDA', 'QT ENTREGUE', 'QT ENVIADA',

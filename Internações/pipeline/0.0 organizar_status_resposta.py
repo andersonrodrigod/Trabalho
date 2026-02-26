@@ -61,7 +61,7 @@ df["Respondido"] = df["Respondido"].replace({
 })
 
 df["Resposta"] = df["Resposta"].replace({
-    "Nπo": "Não"
+    "Nπo tenho interesse": "Não tenho interesse"
 })
 
 # ------------------------------------------------------------
