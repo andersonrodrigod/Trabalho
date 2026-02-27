@@ -98,25 +98,46 @@ def definir_acao(row):
 
     processos_reenvio = {
         "SEGUNDO_ENVIO_LIDOS",
+        "ENVIAR_DISPARO_NOVAMENTE",
+    }
+    processos_troca_contato = {
         "MUDAR_CONTATO_LIDOS_NAO_IDENTIFICADOS",
         "MUDAR_CONTATO_LIDOS_REPOSTA_NAO",
         "MUDAR_CONTATO_LIDOS_SEM_RESPOSTA",
-        "ENVIAR_DISPARO_NOVAMENTE",
+        "MUDAR_CONTATO_ENVIO",
     }
 
     # Processos de reenvio: manter o mesmo slot (coluna) do telefone enviado.
     if processo in processos_reenvio:
         coluna_enviado = identificar_coluna_telefone_enviado(row)
         if not coluna_enviado:
-            return pd.NA
+            return "SEM_TELEFONE_DISPONIVEL"
         return f"ENVIAR_{coluna_enviado.replace(' ', '_')}"
 
-    # Troca de contato: busca o menor indice disponivel (status vazio).
-    if  processo == "MUDAR_CONTATO_LIDOS_SEM_RESPOSTA" or processo == "MUDAR_CONTATO_LIDOS_REPOSTA_NAO" or processo == "MUDAR_CONTATO_LIDOS_NAO_IDENTIFICADOS" or  processo == "MUDAR_CONTATO_ENVIO":
+    # Troca de contato: escolher telefone elegivel com numero diferente do ja enviado.
+    if processo in processos_troca_contato:
+        telefone_enviado = normalizar_telefone(row.get("TELEFONE ENVIADO", pd.NA))
+        coluna_enviado = identificar_coluna_telefone_enviado(row)
+        telefones_vistos = set()
+
         for i in range(1, 6):
+            coluna_i = f"TELEFONE {i}"
             status_i = row.get(f"TELEFONE STATUS {i}", pd.NA)
-            tel_i = normalizar_telefone(row.get(f"TELEFONE {i}", pd.NA))
-            if valor_vazio(status_i) and tel_i:
+            tel_i = normalizar_telefone(row.get(coluna_i, pd.NA))
+
+            if not tel_i:
+                continue
+            if not valor_vazio(status_i):
+                continue
+            if coluna_enviado and coluna_i == coluna_enviado:
+                continue
+            if telefone_enviado and tel_i == telefone_enviado:
+                continue
+            if tel_i in telefones_vistos:
+                continue
+
+            telefones_vistos.add(tel_i)
+            if tel_i:
                 return f"ENVIAR_TELEFONE_{i}"
     elif processo == "ENCERRAR_CONTATO_LIDOS_RESPOSTA_SIM":
         return "CONTATO_NAO_DESEJA_RECEBER"
@@ -270,7 +291,7 @@ if qtd_mudar_envio_contato > 0:
     print("   -> Primeiras CHAVES:")
     print(
         df_usuarios.loc[
-            df_usuarios["PROCESSO"] == "MUDAR_ENVIO_CONTATO",
+            df_usuarios["PROCESSO"] == "MUDAR_CONTATO_ENVIO",
             "CHAVE RELATORIO",
         ].head().to_list()
     )

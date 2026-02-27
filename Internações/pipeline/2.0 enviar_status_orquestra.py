@@ -63,7 +63,7 @@ df_status["RESPOSTA_NORM"] = (
 )
 
 df_status["DATA_ENVIO"] = pd.to_datetime(
-    df_status["Data de envio"],
+    df_status["Data do envio"],
     dayfirst=True,
     errors="coerce"
 )

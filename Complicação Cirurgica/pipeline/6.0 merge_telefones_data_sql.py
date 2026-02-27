@@ -3,7 +3,7 @@ import pandas as pd
 # =========================================================
 # 1. Ler os arquivos
 # =========================================================
-df_main = pd.read_excel("JANEIRO INTERNAÇÕES MAIN.xlsx")
+df_main = pd.read_excel("COMPLICAÇÃO JANEIRO 27.02.xlsx")
 df_senhas = pd.read_csv("telefone_janeiro_internacoes.csv")
 
 # =========================================================
@@ -44,11 +44,17 @@ def ajustar_nono_digito(telefone: str) -> str:
     if telefone == "":
         return telefone
 
-    if len(telefone) > 4 and telefone[4] == "9":
-        if len(telefone) == 12:
-            return telefone[:4] + "9" + telefone[4:]
-        if len(telefone) == 13:
+    # Numero fixo: contando da direita para a esquerda, o 8o digito
+    # em 2, 3, 4 ou 5 indica que nao deve inserir 9.
+    if len(telefone) >= 8:
+        oitavo_da_direita = telefone[-8]
+        if oitavo_da_direita in {"2", "3", "4", "5"}:
             return telefone
+
+    # Regra atual: apenas para telefones com 12 caracteres,
+    # inserir 9 apos o 4o caractere.
+    if len(telefone) == 12:
+        return telefone[:4] + "9" + telefone[4:]
 
     return telefone
 

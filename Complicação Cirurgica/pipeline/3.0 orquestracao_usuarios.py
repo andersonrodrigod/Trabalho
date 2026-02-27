@@ -114,15 +114,30 @@ def definir_acao(row):
             return "SEM_TELEFONE_DISPONIVEL"
         return f"ENVIAR_{coluna_enviado.replace(' ', '_')}"
 
-    # Troca de contato: manter slot enviado quando possivel; senao, usar primeiro telefone disponivel.
+    # Troca de contato: escolher telefone elegivel com numero diferente do ja enviado.
     if processo in processos_troca_contato:
+        telefone_enviado = normalizar_telefone(row.get("TELEFONE ENVIADO", pd.NA))
         coluna_enviado = identificar_coluna_telefone_enviado(row)
-        if coluna_enviado:
-            return f"ENVIAR_{coluna_enviado.replace(' ', '_')}"
+        telefones_vistos = set()
+
         for i in range(1, 6):
+            coluna_i = f"TELEFONE {i}"
             status_i = row.get(f"TELEFONE STATUS {i}", pd.NA)
-            tel_i = normalizar_telefone(row.get(f"TELEFONE {i}", pd.NA))
-            if valor_vazio(status_i) and tel_i:
+            tel_i = normalizar_telefone(row.get(coluna_i, pd.NA))
+
+            if not tel_i:
+                continue
+            if not valor_vazio(status_i):
+                continue
+            if coluna_enviado and coluna_i == coluna_enviado:
+                continue
+            if telefone_enviado and tel_i == telefone_enviado:
+                continue
+            if tel_i in telefones_vistos:
+                continue
+
+            telefones_vistos.add(tel_i)
+            if tel_i:
                 return f"ENVIAR_TELEFONE_{i}"
     elif processo == "ENCERRAR_CONTATO_LIDOS_RESPOSTA_SIM":
         return "CONTATO_NAO_DESEJA_RECEBER"
@@ -175,7 +190,7 @@ mask_lida_sem_resposta = (
 mask_lida_resposta_nao = (
     ~mask_em_respondidos
     & mask_em_lidos
-    & (df_usuarios["LIDA_REPOSTA_NAO"] >= 2)
+    & (df_usuarios["LIDA_REPOSTA_NAO"] >= 1)
 )
 
 col_telefone_enviado = df_usuarios["TELEFONE ENVIADO"]
@@ -277,7 +292,7 @@ if qtd_mudar_envio_contato > 0:
     print("   -> Primeiras CHAVES:")
     print(
         df_usuarios.loc[
-            df_usuarios["PROCESSO"] == "MUDAR_ENVIO_CONTATO",
+            df_usuarios["PROCESSO"] == "MUDAR_CONTATO_ENVIO",
             "CHAVE RELATORIO",
         ].head().to_list()
     )
