@@ -1,5 +1,4 @@
 pandas
 openpyxl
 python-pptx
-customtkinter
 matplotlib
