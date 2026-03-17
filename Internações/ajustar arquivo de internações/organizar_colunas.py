@@ -3,7 +3,7 @@ import pandas as pd
 # =====================================================
 # 1. Ler arquivo
 # =====================================================
-df = pd.read_excel("JANEIRO_INTERNAÇOES.xlsx")
+df = pd.read_excel("internacoes_mes_fevereiro.xlsx")
 
 # =====================================================
 # 2. Dicionário de renomeação (somente o que foi pedido)
@@ -23,6 +23,7 @@ renomear = {
     "NM_FANTASIA_PRESTADOR_EXECUTANTE": "PRESTADOR",
     "CD_REDE_ATENDIMENTO": "REDE ATENDIMENTO",
     "CATEGORIA": "CATEGORIA DE INTERNACAO",
+    "TIPO_ATENDIMENTO": "TP ATENDIMENTO"
 }
 
 df = df.rename(columns=renomear)
@@ -58,7 +59,6 @@ ordem_colunas = [
     "COD USUARIO",
     "USUARIO",
     "CPF_BENEFICIARIO",
-    "TELEFONE PARAMETRO",
     "TELEFONE",
     "DT NASCIMENTO",
     "IDADE",

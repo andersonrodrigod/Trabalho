@@ -1,11 +1,11 @@
 import pandas as pd
 
 # 1. Ler o arquivo
-df = pd.read_excel("JANEIRO_INTERNAÇOES.xlsx")
+df = pd.read_excel("BASE_FINAL_ORGANIZADA.xlsx")
 
 # 2. Garantir tipo correto
 df["CD_USUARIO"] = df["CD_USUARIO"].astype(str).str.strip()
-df["NOME_PROCEDIMENTO"] = df["NOME_PROCEDIMENTO"].astype(str).str.upper()
+df["PROCEDIMENTO"] = df["PROCEDIMENTO"].astype(str).str.upper()
 
 # 3. Identificar duplicados de CD_USUARIO
 df["DUPLICADO"] = df["CD_USUARIO"].duplicated(keep=False)
@@ -14,7 +14,7 @@ df["DUPLICADO"] = df["CD_USUARIO"].duplicated(keep=False)
 df_dup = df[df["DUPLICADO"] == True]
 
 # 5. Marcar quais são INTERNACAO CLINICA
-df_dup["INTERNACAO_CLINICA"] = df_dup["NOME_PROCEDIMENTO"].str.contains(
+df_dup["INTERNACAO_CLINICA"] = df_dup["PROCEDIMENTO"].str.contains(
     "INTERNACAO CLINICA",
     na=False
 )
