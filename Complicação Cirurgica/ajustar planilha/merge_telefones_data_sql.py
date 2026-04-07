@@ -5,8 +5,13 @@ from decimal import Decimal, InvalidOperation
 # =========================================================
 # 1. Ler os arquivos
 # =========================================================
-df_main = pd.read_excel("BASE FEVEREIRO INTERNACAO MAIN1.xlsx")
-df_senhas = pd.read_csv("telefone_fevereiro_internacoes.csv")
+arquivo_entrada = "REGISTROS_MANTIDOS.xlsx"
+arquivo_saida = "COMPLICACAO MARCO.xlsx"
+aba_base = "BASE"
+
+abas = pd.read_excel(arquivo_entrada, sheet_name=None)
+df_main = abas[aba_base]
+df_senhas = pd.read_csv("telefone_marco_internacoes.csv")
 
 # =========================================================
 # 2. Limpar e padronizar chave SENHA
@@ -167,7 +172,8 @@ print("Senha encontrada, mas sem telefone:", len(sem_telefone))
 # =========================================================
 # 10. Salvar arquivo final
 # =========================================================
-df_final.to_excel(
-    "BASE FEVEREIRO INTERNACAO MAIN.xlsx",
-    index=False
-)
+abas[aba_base] = df_final
+
+with pd.ExcelWriter(arquivo_saida, engine="openpyxl") as writer:
+    for nome_aba, df_aba in abas.items():
+        df_aba.to_excel(writer, sheet_name=nome_aba, index=False)
